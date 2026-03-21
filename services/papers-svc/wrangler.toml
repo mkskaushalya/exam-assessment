@@ -1,0 +1,7 @@
+name = "papers-svc"
+main = "src/index.ts"
+compatibility_date = "2025-03-15"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "your-kv-namespace-id"
