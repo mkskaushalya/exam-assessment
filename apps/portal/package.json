@@ -1,0 +1,42 @@
+{
+  "name": "@assessment/portal",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest run",
+    "clean": "rimraf .next dist"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.6.0",
+    "@assessment/types": "workspace:*",
+    "@assessment/utils": "workspace:*",
+    "@tanstack/react-query": "^5.75.0",
+    "antd": "^5.24.0",
+    "axios": "^1.9.0",
+    "next": "^15.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hook-form": "^7.55.0",
+    "@hookform/resolvers": "^5.0.0",
+    "recharts": "^2.15.0",
+    "zod": "^3.24.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@assessment/tsconfig": "workspace:*",
+    "@testing-library/jest-dom": "^6.6.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "sass": "^1.87.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.1.0",
+    "@vitejs/plugin-react": "^4.4.0",
+    "jsdom": "^26.1.0"
+  }
+}

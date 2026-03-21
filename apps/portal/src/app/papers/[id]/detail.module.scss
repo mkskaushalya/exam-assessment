@@ -1,0 +1,83 @@
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 6rem 0;
+}
+
+.header {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.headerInfo {
+  flex: 1;
+}
+
+.metadata {
+  display: flex;
+  gap: 1.5rem;
+  color: #6b7280;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.actionCard {
+  min-width: 250px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.price {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #4f46e5;
+  margin-bottom: 1rem;
+}
+
+.questionItem {
+  border-radius: 8px;
+  padding: 1rem !important;
+
+  &:hover {
+    background: #fafafa;
+  }
+}
+
+.questionContent {
+  width: 100%;
+}
+
+.questionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.lockOverlay {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px dashed #d1d5db;
+}
+
+.lockIcon {
+  font-size: 1.25rem;
+  color: #9ca3af;
+}

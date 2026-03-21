@@ -1,0 +1,52 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 6rem 0;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.trophy {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  display: block;
+
+  &.passed {
+    color: #10b981;
+  }
+
+  &.failed {
+    color: #ef4444;
+  }
+}
+
+.statCard {
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.charts {
+  margin-top: 2rem;
+}
+
+.chartCard {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 2.5rem;
+  gap: 1rem;
+}
