@@ -1,6 +1,6 @@
 'use client';
 
-import { Form, Input, Button, Card, Typography, App as AntApp } from 'antd';
+import { Input, Button, Card, Typography, App as AntApp } from 'antd';
 import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';

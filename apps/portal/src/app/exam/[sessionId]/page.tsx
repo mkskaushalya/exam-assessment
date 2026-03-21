@@ -1,8 +1,8 @@
 'use client';
 
 import { use, useState, useEffect, useCallback, useRef } from 'react';
-import { Card, Radio, Button, Typography, Progress, App as AntApp, Modal, Tag } from 'antd';
-import { ClockCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { Card, Radio, Button, Typography, Progress, App as AntApp, Tag } from 'antd';
+import { ClockCircleOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
