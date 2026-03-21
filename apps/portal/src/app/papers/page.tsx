@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, Tag, Select, Input, Pagination, Row, Col, Typography, Spin, Empty } from 'antd';
 import { SearchOutlined, BookOutlined, ClockCircleOutlined } from '@ant-design/icons';
@@ -26,7 +26,7 @@ const PAPER_TYPE_LABELS: Record<string, string> = {
   ai_predicted: 'AI Predicted',
 };
 
-export default function PapersPage() {
+function PapersContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -178,5 +178,19 @@ export default function PapersPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function PapersPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className={styles.loading}>
+          <Spin size="large" />
+        </div>
+      }
+    >
+      <PapersContent />
+    </Suspense>
   );
 }
