@@ -1,0 +1,15 @@
+name = "api-gateway"
+main = "src/index.ts"
+compatibility_date = "2025-03-15"
+
+[vars]
+ENVIRONMENT = "production"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "your-kv-namespace-id"
+
+# Service bindings for internal routing
+# [services]
+# AUTH_SVC = { service = "auth-svc" }
+# PAPERS_SVC = { service = "papers-svc" }
