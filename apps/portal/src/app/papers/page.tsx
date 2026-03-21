@@ -165,7 +165,7 @@ export default function PapersPage() {
             ))}
           </Row>
 
-          <div className={styles.pagination}>
+          <div className={styles.pagination} id="papers-pagination">
             <Pagination
               current={page}
               total={data.meta?.total ?? 0}
@@ -173,7 +173,6 @@ export default function PapersPage() {
               onChange={(p) => updateFilters({ page: p.toString() })}
               showSizeChanger={false}
               showTotal={(total) => `${total} papers`}
-              id="papers-pagination"
             />
           </div>
         </>

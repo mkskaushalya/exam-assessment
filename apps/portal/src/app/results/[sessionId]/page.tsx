@@ -1,12 +1,11 @@
 'use client';
 
 import { use } from 'react';
-import { Card, Typography, Statistic, Row, Col, Tag, Spin, Button } from 'antd';
+import { Card, Typography, Statistic, Row, Col, Spin, Button } from 'antd';
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   TrophyOutlined,
-  ClockCircleOutlined,
 } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -43,7 +42,8 @@ interface ResultData {
 }
 
 const COLORS = ['#10B981', '#EF4444'];
-const COMPLEXITY_COLORS = { easy: '#10B981', medium: '#F59E0B', hard: '#EF4444' };
+// Complexity colors reserved for future per-question breakdown
+// const COMPLEXITY_COLORS = { easy: '#10B981', medium: '#F59E0B', hard: '#EF4444' };
 
 export default function ResultsPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = use(params);
