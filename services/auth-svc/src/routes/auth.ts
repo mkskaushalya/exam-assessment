@@ -110,12 +110,14 @@ authRoutes.post('/login', async (c) => {
     expirationTtl: refreshTokenExpiry,
   });
 
+  const isProd = c.env.ENVIRONMENT === 'production';
+
   // Set refresh token as httpOnly cookie
   setCookie(c, 'refresh_token', refreshToken, {
     httpOnly: true,
-    secure: true,
-    sameSite: 'Strict',
-    path: '/auth/refresh',
+    secure: isProd,
+    sameSite: isProd ? 'Strict' : 'Lax',
+    path: '/',
     maxAge: refreshTokenExpiry,
   });
 
@@ -183,6 +185,8 @@ authRoutes.post('/refresh', async (c) => {
     c.env.JWT_SECRET,
   );
 
+  const isProd = c.env.ENVIRONMENT === 'production';
+
   // Issue new refresh token
   const newRefreshToken = generateId();
   await c.env.KV.put(`refresh:${newRefreshToken}`, user.id, {
@@ -191,9 +195,9 @@ authRoutes.post('/refresh', async (c) => {
 
   setCookie(c, 'refresh_token', newRefreshToken, {
     httpOnly: true,
-    secure: true,
-    sameSite: 'Strict',
-    path: '/auth/refresh',
+    secure: isProd,
+    sameSite: isProd ? 'Strict' : 'Lax',
+    path: '/',
     maxAge: refreshTokenExpiry,
   });
 
@@ -215,7 +219,7 @@ authRoutes.post('/logout', jwtAuth, async (c) => {
     await c.env.KV.delete(`refresh:${refreshToken}`);
   }
 
-  deleteCookie(c, 'refresh_token', { path: '/auth/refresh' });
+  deleteCookie(c, 'refresh_token', { path: '/' });
 
   return c.json(createSuccessResponse({ message: 'Logged out successfully' }));
 });

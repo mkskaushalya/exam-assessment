@@ -1,6 +1,7 @@
 import type { Database } from '@assessment/db';
 
 export interface Env {
+  ENVIRONMENT?: string;
   DATABASE_URL: string;
   JWT_SECRET: string;
   JWT_ISSUER: string;

@@ -10,12 +10,16 @@
     "clean": "rimraf .next dist"
   },
   "dependencies": {
+    "@ant-design/nextjs-registry": "^1.3.0",
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@assessment/types": "workspace:*",
     "@assessment/utils": "workspace:*",
     "antd": "^5.24.0",
+    "axios": "^1.13.6",
     "next": "^15.3.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@assessment/tsconfig": "workspace:*",

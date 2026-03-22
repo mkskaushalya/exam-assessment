@@ -9,11 +9,13 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
+    "db:seed": "npx tsx src/seed.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "clean": "rimraf dist drizzle"
   },
   "dependencies": {
     "@assessment/types": "workspace:*",
+    "@assessment/utils": "workspace:*",
     "@neondatabase/serverless": "^0.9.5",
     "drizzle-orm": "^0.39.0"
   },

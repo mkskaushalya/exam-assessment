@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 const stats = [
   { label: 'Total Papers', value: '—', icon: '📄' },
   { label: 'Total Questions', value: '—', icon: '❓' },
@@ -102,9 +104,13 @@ export default function AdminPage() {
           }}
         >
           {quickActions.map((action) => (
-            <div
+            <Link
+              href={action.href}
               key={action.label}
               style={{
+                display: 'block',
+                color: 'inherit',
+                textDecoration: 'none',
                 background: 'rgba(255,255,255,0.05)',
                 backdropFilter: 'blur(12px)',
                 borderRadius: '16px',
@@ -114,12 +120,12 @@ export default function AdminPage() {
                 transition: 'all 0.2s ease',
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.1)';
-                (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
+                (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.1)';
+                (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)';
-                (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)';
+                (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.05)';
+                (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(0)';
               }}
             >
               <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>{action.icon}</div>
@@ -127,7 +133,7 @@ export default function AdminPage() {
               <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', lineHeight: '1.4' }}>
                 {action.description}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

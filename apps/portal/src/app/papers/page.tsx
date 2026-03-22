@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Card, Tag, Select, Input, Pagination, Row, Col, Typography, Spin, Empty } from 'antd';
 import { SearchOutlined, BookOutlined, ClockCircleOutlined } from '@ant-design/icons';
@@ -9,6 +9,7 @@ import Link from 'next/link';
 
 import type { Paper, ApiResponse } from '@assessment/types';
 import { api } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
 import styles from './papers.module.scss';
 
 const { Title, Text } = Typography;
@@ -29,6 +30,7 @@ const PAPER_TYPE_LABELS: Record<string, string> = {
 function PapersContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   const page = Number(searchParams.get('page')) || 1;
   const subject = searchParams.get('subject') ?? undefined;
@@ -37,7 +39,13 @@ function PapersContent() {
 
   const [searchInput, setSearchInput] = useState(search ?? '');
 
-  const { data, isLoading } = useQuery({
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [authLoading, isAuthenticated, router]);
+
+  const { data, isLoading: queryLoading } = useQuery({
     queryKey: ['papers', { page, subject, type, search }],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -116,7 +124,11 @@ function PapersContent() {
         />
       </div>
 
-      {isLoading ? (
+      {authLoading || !isAuthenticated ? (
+        <div className={styles.loading}>
+          <Spin size="large" tip="Authenticating..." />
+        </div>
+      ) : queryLoading ? (
         <div className={styles.loading}>
           <Spin size="large" />
         </div>
