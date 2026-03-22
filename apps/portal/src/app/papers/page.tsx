@@ -126,7 +126,7 @@ function PapersContent() {
 
       {authLoading || !isAuthenticated ? (
         <div className={styles.loading}>
-          <Spin size="large" tip="Authenticating..." />
+          <Spin size="large" />
         </div>
       ) : queryLoading ? (
         <div className={styles.loading}>

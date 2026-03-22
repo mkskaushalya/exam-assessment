@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Layout, Menu, Button, Avatar, Dropdown } from 'antd';
+import { Layout, Menu, Avatar, Dropdown } from 'antd';
+import type { MenuProps } from 'antd';
 import {
   DashboardOutlined,
   FileTextOutlined,
@@ -51,7 +52,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     },
   ];
 
-  const userMenu = [
+  const userMenu: MenuProps['items'] = [
     {
       key: 'profile',
       label: <span style={{ color: '#888' }}>{user?.email}</span>,
