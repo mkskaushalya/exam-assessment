@@ -1,19 +1,7 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
-  parser: '@typescript-eslint/parser',
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    'plugin:import/recommended',
-    'plugin:import/typescript',
-    'prettier',
-  ],
-  plugins: ['@typescript-eslint'],
+  extends: ['./base.js', 'plugin:import/recommended', 'plugin:import/typescript'],
   rules: {
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-    '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/consistent-type-imports': 'error',
     'import/order': [
       'error',
       {
@@ -22,7 +10,5 @@ module.exports = {
         alphabetize: { order: 'asc' },
       },
     ],
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
   },
-  ignorePatterns: ['node_modules/', 'dist/', '.next/', '.turbo/'],
 };
