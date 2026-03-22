@@ -17,7 +17,7 @@
     "@assessment/types": "workspace:*",
     "@assessment/utils": "workspace:*",
     "@neondatabase/serverless": "^0.9.5",
-    "drizzle-orm": "^0.39.0"
+    "drizzle-orm": "0.39.3"
   },
   "devDependencies": {
     "@assessment/tsconfig": "workspace:*",

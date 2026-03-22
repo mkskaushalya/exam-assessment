@@ -185,7 +185,7 @@ importers:
         specifier: ^0.9.5
         version: 0.9.5
       drizzle-orm:
-        specifier: ^0.39.0
+        specifier: 0.39.3
         version: 0.39.3(@cloudflare/workers-types@4.20260317.1)(@neondatabase/serverless@0.9.5)(@types/pg@8.20.0)
     devDependencies:
       '@assessment/tsconfig':
@@ -286,7 +286,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/utils
       drizzle-orm:
-        specifier: ^0.39.3
+        specifier: 0.39.3
         version: 0.39.3(@cloudflare/workers-types@4.20260317.1)(@neondatabase/serverless@1.0.2)(@types/pg@8.20.0)
       hono:
         specifier: ^4.7.0
@@ -323,7 +323,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/utils
       drizzle-orm:
-        specifier: ^0.39.3
+        specifier: 0.39.3
         version: 0.39.3(@cloudflare/workers-types@4.20260317.1)(@neondatabase/serverless@1.0.2)(@types/pg@8.20.0)
       hono:
         specifier: ^4.7.0

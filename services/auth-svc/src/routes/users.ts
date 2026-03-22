@@ -1,6 +1,5 @@
 import { Hono } from 'hono';
-import { eq } from 'drizzle-orm';
-import { users } from '@assessment/db';
+import { eq, users } from '@assessment/db';
 import { createSuccessResponse, createErrorResponse, ErrorCode } from '@assessment/utils';
 
 import type { Env, Variables } from '../types';

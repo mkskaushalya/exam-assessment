@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
-import { eq } from 'drizzle-orm';
-import { users } from '@assessment/db';
+import { eq, users } from '@assessment/db';
 import { hashPassword, verifyPassword, generateId, createSuccessResponse, createErrorResponse, ErrorCode } from '@assessment/utils';
 
 import type { Env, Variables } from '../types';

@@ -10,5 +10,6 @@ export function createDb(databaseUrl: string) {
 
 export type Database = ReturnType<typeof createDb>;
 
-// Re-export everything from schema
+// Re-export everything from schema and drizzle-orm
 export * from './schema';
+export * from 'drizzle-orm';

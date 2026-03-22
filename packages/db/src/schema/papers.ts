@@ -1,8 +1,6 @@
 import { pgTable, text, integer, numeric, timestamp, pgEnum, index } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
-import { users } from './users';
-
 export const paperTypeEnum = pgEnum('paper_type', ['past_paper', 'model_paper', 'ai_predicted']);
 
 export const questionComplexityEnum = pgEnum('question_complexity', ['easy', 'medium', 'hard']);

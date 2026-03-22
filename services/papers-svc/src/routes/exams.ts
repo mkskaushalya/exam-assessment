@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
-import { eq, and, sql, inArray } from 'drizzle-orm';
 import {
+  eq,
+  and,
+  inArray,
   examSessions,
   sessionAnswers,
   questions,
