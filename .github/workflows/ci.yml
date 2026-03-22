@@ -67,7 +67,7 @@ jobs:
     name: Deploy Workers
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push'
     strategy:
       matrix:
         service: [api-gateway, auth-svc, papers-svc]
@@ -98,7 +98,7 @@ jobs:
     name: Deploy Portal
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -119,5 +119,10 @@ jobs:
         run: pnpm turbo build --filter=@assessment/portal
 
       - name: Deploy to Vercel
-        run: echo "Deploy portal to Vercel or Cloudflare Pages"
-        # Add actual Vercel/CF Pages deployment here
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: apps/portal
+          vercel-args: '--prod'
