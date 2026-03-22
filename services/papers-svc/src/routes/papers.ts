@@ -389,3 +389,47 @@ paperRoutes.delete('/questions/:questionId', jwtAuth, adminAuth, async (c) => {
   await db.delete(questions).where(eq(questions.id, questionId));
   return c.json(createSuccessResponse({ message: 'Question deleted' }));
 });
+/**
+ * POST /papers/:id/purchase
+ * Purchase a paper (Simulated).
+ */
+paperRoutes.post('/:id/purchase', jwtAuth, async (c) => {
+  const paperId = c.req.param('id');
+  const userId = c.get('userId');
+  const db = c.get('db');
+
+  if (!userId) {
+    return c.json(createErrorResponse(ErrorCode.UNAUTHORIZED, 'Authentication required'), 401);
+  }
+
+  // Check if paper exists
+  const paperResult = await db.select().from(papers).where(eq(papers.id, paperId)).limit(1);
+  const paper = paperResult[0];
+
+  if (!paper) {
+    return c.json(createErrorResponse(ErrorCode.NOT_FOUND, 'Paper not found'), 404);
+  }
+
+  // Check if already purchased
+  const existingPurchase = await db
+    .select()
+    .from(purchases)
+    .where(and(eq(purchases.userId, userId), eq(purchases.paperId, paperId)))
+    .limit(1);
+
+  if (existingPurchase.length > 0) {
+    return c.json(createSuccessResponse({ message: 'Paper already purchased' }));
+  }
+
+  // Record simulated purchase
+  await db.insert(purchases).values({
+    id: crypto.randomUUID(),
+    userId,
+    paperId,
+    amountPaidLkr: paper.priceLkr,
+    paymentMethod: 'card',
+    paymentRef: `simulated_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+  });
+
+  return c.json(createSuccessResponse({ message: 'Purchase successful' }), 201);
+});

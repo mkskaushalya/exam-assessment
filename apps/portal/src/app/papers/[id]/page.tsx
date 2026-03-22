@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState } from 'react';
 import { Card, Tag, Typography, Button, List, Divider, Spin, App as AntApp } from 'antd';
 import { LockOutlined, BookOutlined, ClockCircleOutlined, FileTextOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
@@ -25,8 +25,29 @@ export default function PaperDetailPage({ params }: { params: Promise<{ id: stri
   const router = useRouter();
   const { message } = AntApp.useApp();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const [purchasing, setPurchasing] = useState(false);
 
-  const { data, isLoading } = useQuery({
+  const handlePurchase = async () => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+    setPurchasing(true);
+    try {
+      await api.post(`/papers/${id}/purchase`);
+      message.success('Paper purchased successfully!');
+      refetch();
+    } catch (err: unknown) {
+      const errorMsg =
+        (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error
+          ?.message ?? 'Failed to purchase paper';
+      message.error(errorMsg);
+    } finally {
+      setPurchasing(false);
+    }
+  };
+
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ['paper', id],
     queryFn: async () => {
       const res = await api.get<ApiResponse<PaperDetailData>>(`/papers/${id}`);
@@ -89,7 +110,14 @@ export default function PaperDetailPage({ params }: { params: Promise<{ id: stri
               Start Exam
             </Button>
           ) : (
-            <Button type="primary" size="large" block id="purchase-paper-btn">
+            <Button 
+              type="primary" 
+              size="large" 
+              block 
+              id="purchase-paper-btn"
+              onClick={handlePurchase}
+              loading={purchasing}
+            >
               Purchase Paper
             </Button>
           )}
