@@ -166,6 +166,64 @@ examRoutes.post('/sessions', async (c) => {
 });
 
 /**
+ * GET /exam/sessions/:id
+ * Get an existing exam session and its questions.
+ */
+examRoutes.get('/sessions/:id', async (c) => {
+  const sessionId = c.req.param('id');
+  const userId = c.get('userId');
+  const db = c.get('db');
+
+  // Get session
+  const sessionResult = await db
+    .select()
+    .from(examSessions)
+    .where(and(eq(examSessions.id, sessionId), eq(examSessions.userId, userId)))
+    .limit(1);
+
+  const session = sessionResult[0];
+  if (!session) {
+    return c.json(createErrorResponse(ErrorCode.NOT_FOUND, 'Session not found'), 404);
+  }
+
+  // Get questions for this paper
+  const paperQuestions = await db
+    .select()
+    .from(questions)
+    .where(eq(questions.paperId, session.paperId))
+    .orderBy(questions.orderIndex);
+
+  const questionsWithOptions = await Promise.all(
+    paperQuestions.map(async (q) => {
+      const options = await db
+        .select({
+          id: questionOptions.id,
+          optionText: questionOptions.optionText,
+          orderIndex: questionOptions.orderIndex,
+        })
+        .from(questionOptions)
+        .where(eq(questionOptions.questionId, q.id))
+        .orderBy(questionOptions.orderIndex);
+      return {
+        id: q.id,
+        questionText: q.questionText,
+        points: q.points,
+        complexity: q.complexity,
+        orderIndex: q.orderIndex,
+        options,
+      };
+    }),
+  );
+
+  return c.json(
+    createSuccessResponse({
+      session,
+      questions: questionsWithOptions,
+    }),
+  );
+});
+
+/**
  * POST /exam/sessions/:id/answer
  * Autosave an answer for a question.
  */
