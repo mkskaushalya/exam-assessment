@@ -13,6 +13,7 @@
     "@ant-design/icons": "^5.6.1",
     "@ant-design/nextjs-registry": "^1.3.0",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
+    "@hookform/resolvers": "^5.0.0",
     "@assessment/types": "workspace:*",
     "@assessment/utils": "workspace:*",
     "antd": "^5.24.0",
@@ -20,6 +21,8 @@
     "next": "^15.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-hook-form": "^7.55.0",
+    "zod": "^3.24.0",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
