@@ -1,11 +1,12 @@
 'use client';
 
-import { Input, Button, Card, Typography, App as AntApp, Alert } from 'antd';
-import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useEffect, useState } from 'react';
+
+import { MailOutlined, LockOutlined } from '@ant-design/icons';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Input, Button, Card, Typography, App as AntApp, Alert } from 'antd';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
 
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 
@@ -44,8 +45,9 @@ export default function AdminLoginPage() {
     try {
       await login(data.email, data.password);
       message.success('Admin Login successful!');
-    } catch (err: any) {
-      const msg = err.response?.data?.error?.message || err.message || 'Login failed.';
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: { message?: string } } }; message?: string };
+      const msg = error.response?.data?.error?.message || error.message || 'Login failed.';
       message.error(msg);
       setErrorMsg(msg);
     }

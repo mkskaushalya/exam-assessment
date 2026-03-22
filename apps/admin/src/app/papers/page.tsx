@@ -1,31 +1,33 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Typography, 
-  Card, 
-  Button, 
-  Table, 
-  Space, 
-  Modal, 
-  Form, 
-  Input, 
-  InputNumber, 
-  Select, 
-  message, 
-  Popconfirm,
-  Tag
-} from 'antd';
-import { 
-  PlusOutlined, 
-  EditOutlined, 
-  DeleteOutlined, 
+
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
   QuestionCircleOutlined,
   SearchOutlined
 } from '@ant-design/icons';
+import {
+  Typography,
+  Card,
+  Button,
+  Table,
+  Space,
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  message,
+  Popconfirm,
+  Tag
+} from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { api } from '@/lib/api';
 import Link from 'next/link';
+
+import { api } from '@/lib/api';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -92,7 +94,7 @@ export default function AdminPapersPage() {
     form.resetFields();
   };
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: Record<string, any>) => {
     try {
       const payload = {
         ...values,

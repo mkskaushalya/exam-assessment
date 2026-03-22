@@ -1,22 +1,23 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Typography, 
-  Card, 
-  Table, 
-  Tag, 
-  message, 
-  Button, 
+
+import {
+  DeleteOutlined,
+  UserOutlined,
+  SearchOutlined
+} from '@ant-design/icons';
+import {
+  Typography,
+  Card,
+  Table,
+  Tag,
+  message,
+  Button,
   Popconfirm,
   Space,
   Input
 } from 'antd';
-import { 
-  DeleteOutlined, 
-  UserOutlined,
-  SearchOutlined
-} from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { api } from '@/lib/api';
 import { useAdminAuthStore } from '@/store/auth';
@@ -61,7 +62,8 @@ export default function AdminUsersPage() {
       await api.delete(`/users/${id}`);
       message.success('User deleted successfully');
       fetchUsers();
-    } catch (error) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: { message?: string } } } };
       message.error(error.response?.data?.error?.message || 'Failed to delete user');
     }
   };

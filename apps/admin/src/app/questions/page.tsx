@@ -1,18 +1,25 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { 
-  Typography, 
-  Card, 
-  Button, 
-  Space, 
-  Modal, 
-  Form, 
-  Input, 
-  InputNumber, 
-  Select, 
-  message, 
+
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  ArrowLeftOutlined,
+  SaveOutlined
+} from '@ant-design/icons';
+import {
+  Typography,
+  Card,
+  Button,
+  Space,
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  message,
   Popconfirm,
   Tag,
   List,
@@ -20,15 +27,10 @@ import {
   Divider,
   Empty
 } from 'antd';
-import { 
-  PlusOutlined, 
-  EditOutlined, 
-  DeleteOutlined, 
-  ArrowLeftOutlined,
-  SaveOutlined
-} from '@ant-design/icons';
-import { api } from '@/lib/api';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+
+import { api } from '@/lib/api';
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -125,12 +127,12 @@ export default function AdminQuestionsPage() {
     setIsModalVisible(true);
   };
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: Record<string, any>) => {
     if (!paperId) return;
     try {
       const payload = {
         ...values,
-        options: values.options.map((opt: any, index: number) => ({
+        options: values.options.map((opt: { isCorrect: boolean; optionText: string }, index: number) => ({
           ...opt,
           isCorrect: opt.isCorrect ? 1 : 0,
           orderIndex: index + 1
@@ -197,7 +199,7 @@ export default function AdminQuestionsPage() {
       <List
         loading={loading}
         dataSource={questions}
-        renderItem={(item, index) => (
+        renderItem={(item) => (
           <Card 
             key={item.id} 
             style={{ marginBottom: '1rem' }}

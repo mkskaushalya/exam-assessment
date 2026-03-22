@@ -1,9 +1,10 @@
-import type { Metadata } from 'next';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { App as AntApp, ConfigProvider } from 'antd';
-import '@ant-design/v5-patch-for-react-19';
+import type { Metadata } from 'next';
 
 import { AdminLayout } from '@/components/layout/AdminLayout';
+
+import '@ant-design/v5-patch-for-react-19';
 
 export const metadata: Metadata = {
   title: 'Admin Panel — Exam Practice Platform',
