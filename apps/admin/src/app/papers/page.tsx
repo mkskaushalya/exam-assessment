@@ -24,7 +24,7 @@ import {
   SearchOutlined
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import api from '@/lib/api';
+import { api } from '@/lib/api';
 import Link from 'next/link';
 
 const { Title, Text } = Typography;

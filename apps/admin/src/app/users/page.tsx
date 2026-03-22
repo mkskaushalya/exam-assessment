@@ -18,7 +18,7 @@ import {
   SearchOutlined
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import api from '@/lib/api';
+import { api } from '@/lib/api';
 import { useAdminAuthStore } from '@/store/auth';
 
 const { Title, Text } = Typography;

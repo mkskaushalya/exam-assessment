@@ -144,7 +144,6 @@ export default function AdminQuestionsPage() {
         await api.post(`/papers/${paperId}/questions`, payload);
         message.success('Question added successfully');
       }
-      setIsModalVisible(true); // Keep open if they want to add more? No, let's close.
       setIsModalVisible(false);
       fetchPaperAndQuestions();
     } catch (error) {
@@ -277,14 +276,12 @@ export default function AdminQuestionsPage() {
                 {fields.map((field, index) => (
                   <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
                     <Form.Item
-                      {...field}
                       name={[field.name, 'isCorrect']}
                       valuePropName="checked"
                     >
                       <Checkbox />
                     </Form.Item>
                     <Form.Item
-                      {...field}
                       name={[field.name, 'optionText']}
                       rules={[{ required: true, message: 'Missing option text' }]}
                       style={{ flex: 1, minWidth: '400px' }}
