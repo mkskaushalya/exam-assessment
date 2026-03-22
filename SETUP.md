@@ -33,12 +33,13 @@ The frontend portal is a Next.js application designed to be deployed on Vercel.
 5. Copy the token.
 
 ### Get Org ID and Project ID:
-1. Ensure your project is linked or created on Vercel.
-2. If using the Vercel CLI locally, run `vercel link`. This will create a `.vercel/project.json` file.
-3. Open `.vercel/project.json`:
-   - `orgId` → **VERCEL_ORG_ID**
-   - `projectId` → **VERCEL_PROJECT_ID**
-4. Alternatively, you can find the **Org ID** in your team settings URL and the **Project ID** in the project's general settings on the Vercel dashboard.
+1. Ensure your projects (portal and admin) are linked or created on Vercel.
+2. For each app, link it via Vercel CLI or find the IDs in the dashboard.
+3. You will need two different **Project IDs**:
+   - One for **apps/portal** → `VERCEL_PORTAL_PROJECT_ID`
+   - One for **apps/admin** → `VERCEL_ADMIN_PROJECT_ID`
+4. The **Org ID** (`VERCEL_ORG_ID`) is usually the same for both.
+5. If using CLI, `vercel link` in each app directory will create a `.vercel/project.json` file where you can find these.
 
 ## 3. Turborepo Remote Caching (Optional but Recommended)
 
@@ -62,7 +63,8 @@ To enable the CI/CD pipeline, you must add the following secrets to your GitHub 
 | `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare Account ID |
 | `VERCEL_TOKEN` | Your Vercel API Token |
 | `VERCEL_ORG_ID` | Your Vercel Organization ID |
-| `VERCEL_PROJECT_ID` | Your Vercel Project ID |
+| `VERCEL_PORTAL_PROJECT_ID` | Project ID for the portal app |
+| `VERCEL_ADMIN_PROJECT_ID` | Project ID for the admin app |
 | `TURBO_TOKEN` | (Same as Vercel Token) |
 | `TURBO_TEAM` | Your Vercel Team/User slug (as a **Variable**, not Secret) |
 
