@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { setCookie, deleteCookie } from 'hono/cookie';
+import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 import { eq } from 'drizzle-orm';
 import { users } from '@assessment/db';
 import { hashPassword, verifyPassword, generateId, createSuccessResponse, createErrorResponse, ErrorCode } from '@assessment/utils';
@@ -139,11 +139,7 @@ authRoutes.post('/login', async (c) => {
  * Rotate refresh token and issue new access token.
  */
 authRoutes.post('/refresh', async (c) => {
-  const refreshToken = c.req.header('Cookie')
-    ?.split(';')
-    .find((cookie) => cookie.trim().startsWith('refresh_token='))
-    ?.split('=')[1]
-    ?.trim();
+  const refreshToken = getCookie(c, 'refresh_token');
 
   if (!refreshToken) {
     return c.json(createErrorResponse(ErrorCode.INVALID_REFRESH_TOKEN, 'No refresh token provided'), 401);
