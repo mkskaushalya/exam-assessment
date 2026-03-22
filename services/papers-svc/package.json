@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --port 8789",
     "deploy": "wrangler deploy",
     "lint": "eslint \"src/**/*.ts\"",
     "clean": "rimraf dist"
@@ -12,6 +12,7 @@
     "@assessment/db": "workspace:*",
     "@assessment/types": "workspace:*",
     "@assessment/utils": "workspace:*",
+    "drizzle-orm": "^0.45.1",
     "hono": "^4.7.0",
     "zod": "^3.24.0"
   },

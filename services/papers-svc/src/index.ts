@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import { cors } from 'hono/cors';
 
 import type { Env, Variables } from './types';
 import { paperRoutes } from './routes/papers';
@@ -9,7 +8,6 @@ import { dbMiddleware } from './middleware/db';
 const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 // Global middleware
-app.use('*', cors());
 app.use('*', dbMiddleware);
 
 // Health check

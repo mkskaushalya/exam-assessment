@@ -3,13 +3,18 @@ main = "src/index.ts"
 compatibility_date = "2025-03-15"
 
 [vars]
-ENVIRONMENT = "production"
+ENVIRONMENT = "development"
+AUTH_SVC_URL = "http://localhost:8788"
+PAPERS_SVC_URL = "http://localhost:8789"
 
 [[kv_namespaces]]
 binding = "KV"
-id = "your-kv-namespace-id"
+id = "2c764f04a4164aeb9f5026ffebd06fbc"
 
-# Service bindings for internal routing
-# [services]
-# AUTH_SVC = { service = "auth-svc" }
-# PAPERS_SVC = { service = "papers-svc" }
+# Service bindings for production (Cloudflare deploy)
+# [[services]]
+# binding = "AUTH_SVC"
+# service = "auth-svc"
+# [[services]]
+# binding = "PAPERS_SVC"
+# service = "papers-svc"

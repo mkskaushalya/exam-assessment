@@ -9,4 +9,4 @@ REFRESH_TOKEN_EXPIRY = "604800"
 
 [[kv_namespaces]]
 binding = "KV"
-id = "your-kv-namespace-id"
+id = "d298e7708ad44a25b6dfb8eab8249b84"

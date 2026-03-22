@@ -108,10 +108,16 @@ pnpm db:studio
 Update the KV namespace IDs in each service's `wrangler.toml`:
 
 ```bash
-# Create KV namespaces
-cd services/auth-svc && npx wrangler kv:namespace create KV
-cd services/papers-svc && npx wrangler kv:namespace create KV
-cd services/api-gateway && npx wrangler kv:namespace create KV
+## Create KV namespaces
+# Auth service
+cd services/auth-svc && npx wrangler kv namespace create AUTH_KV
+
+# Papers service
+cd ../papers-svc && npx wrangler kv namespace create PAPERS_KV
+
+# API Gateway
+cd ../api-gateway && npx wrangler kv namespace create GATEWAY_KV
+
 ```
 
 Copy the generated IDs into the respective `wrangler.toml` files.
