@@ -104,6 +104,10 @@ app.all('/api/auth/*', async (c) => {
   return proxyRequest(c, '/api/auth', '/auth', c.env.AUTH_SVC_URL);
 });
 
+app.all('/api/users/*', async (c) => {
+  return proxyRequest(c, '/api/users', '/users', c.env.AUTH_SVC_URL);
+});
+
 app.all('/api/papers/*', async (c) => {
   return proxyRequest(c, '/api/papers', '/papers', c.env.PAPERS_SVC_URL);
 });

@@ -59,6 +59,19 @@ export const optionalAuth = createMiddleware<{ Bindings: Env; Variables: Variabl
   },
 );
 
+/**
+ * Admin authorization middleware.
+ */
+export const adminAuth = createMiddleware<{ Bindings: Env; Variables: Variables }>(
+  async (c, next) => {
+    const role = c.get('userRole');
+    if (role !== 'admin') {
+      return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Admin access required' } }, 403);
+    }
+    await next();
+  },
+);
+
 async function verifyJwt(token: string, secret: string): Promise<JwtPayload> {
   const parts = token.split('.');
   if (parts.length !== 3) throw new Error('Invalid token');

@@ -5,7 +5,7 @@ import { createSuccessResponse, createErrorResponse, validatePagination, ErrorCo
 import { z } from 'zod';
 
 import type { Env, Variables } from '../types';
-import { jwtAuth, optionalAuth } from '../middleware/jwt';
+import { jwtAuth, optionalAuth, adminAuth } from '../middleware/jwt';
 
 export const paperRoutes = new Hono<{ Bindings: Env; Variables: Variables }>();
 
@@ -176,4 +176,216 @@ paperRoutes.post('/:id/issues', jwtAuth, async (c) => {
     }),
     201,
   );
+});
+/**
+ * POST /papers
+ * Create a new paper (Admin only).
+ */
+const createPaperSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  subject: z.string().min(1),
+  language: z.string().min(1),
+  examBoard: z.string().min(1),
+  type: z.enum(['past_paper', 'model_paper', 'ai_predicted']),
+  year: z.number().int(),
+  priceLkr: z.string().regex(/^\d+(\.\d{1,2})?$/),
+});
+
+paperRoutes.post('/', jwtAuth, adminAuth, async (c) => {
+  const body = await c.req.json();
+  const parsed = createPaperSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return c.json(
+      createErrorResponse(ErrorCode.VALIDATION_ERROR, 'Validation failed', parsed.error.flatten()),
+      400,
+    );
+  }
+
+  const db = c.get('db');
+  const id = crypto.randomUUID();
+
+  await db.insert(papers).values({
+    id,
+    ...parsed.data,
+  });
+
+  return c.json(createSuccessResponse({ id }), 201);
+});
+
+/**
+ * PUT /papers/:id
+ * Update an existing paper (Admin only).
+ */
+paperRoutes.put('/:id', jwtAuth, adminAuth, async (c) => {
+  const id = c.req.param('id');
+  const body = await c.req.json();
+  const parsed = createPaperSchema.partial().safeParse(body);
+
+  if (!parsed.success) {
+    return c.json(
+      createErrorResponse(ErrorCode.VALIDATION_ERROR, 'Validation failed', parsed.error.flatten()),
+      400,
+    );
+  }
+
+  const db = c.get('db');
+  await db.update(papers).set(parsed.data).where(eq(papers.id, id));
+
+  return c.json(createSuccessResponse({ message: 'Paper updated' }));
+});
+
+/**
+ * DELETE /papers/:id
+ * Delete a paper (Admin only).
+ */
+paperRoutes.delete('/:id', jwtAuth, adminAuth, async (c) => {
+  const id = c.req.param('id');
+  const db = c.get('db');
+
+  await db.delete(papers).where(eq(papers.id, id));
+  return c.json(createSuccessResponse({ message: 'Paper deleted' }));
+});
+
+/**
+ * GET /papers/:id/questions/admin
+ * Get all questions with options for a paper (Admin only).
+ */
+paperRoutes.get('/:id/questions/admin', jwtAuth, adminAuth, async (c) => {
+  const paperId = c.req.param('id');
+  const db = c.get('db');
+
+  const questionsResult = await db
+    .select()
+    .from(questions)
+    .where(eq(questions.paperId, paperId))
+    .orderBy(questions.orderIndex);
+
+  const fullQuestions = await Promise.all(
+    questionsResult.map(async (q) => {
+      const options = await db
+        .select()
+        .from(questionOptions)
+        .where(eq(questionOptions.questionId, q.id))
+        .orderBy(questionOptions.orderIndex);
+      return { ...q, options };
+    }),
+  );
+
+  return c.json(createSuccessResponse(fullQuestions));
+});
+
+/**
+ * POST /papers/:id/questions
+ * Add a new question to a paper (Admin only).
+ */
+const createQuestionSchema = z.object({
+  questionText: z.string().min(1),
+  explanationText: z.string().default(''),
+  points: z.number().int().default(1),
+  complexity: z.enum(['easy', 'medium', 'hard']).default('medium'),
+  orderIndex: z.number().int(),
+  options: z.array(z.object({
+    optionText: z.string().min(1),
+    isCorrect: z.number().min(0).max(1),
+    orderIndex: z.number().int(),
+  })),
+});
+
+paperRoutes.post('/:id/questions', jwtAuth, adminAuth, async (c) => {
+  const paperId = c.req.param('id');
+  const body = await c.req.json();
+  const parsed = createQuestionSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return c.json(
+      createErrorResponse(ErrorCode.VALIDATION_ERROR, 'Validation failed', parsed.error.flatten()),
+      400,
+    );
+  }
+
+  const db = c.get('db');
+  const questionId = crypto.randomUUID();
+
+  // Insert question and options in a transaction if possible, but neon-http doesn't support them easily with drizzle-orm yet in some versions.
+  // We'll do it sequentially for now.
+  await db.insert(questions).values({
+    id: questionId,
+    paperId,
+    questionText: parsed.data.questionText,
+    explanationText: parsed.data.explanationText,
+    points: parsed.data.points,
+    complexity: parsed.data.complexity,
+    orderIndex: parsed.data.orderIndex,
+  });
+
+  if (parsed.data.options.length > 0) {
+    await db.insert(questionOptions).values(
+      parsed.data.options.map((opt) => ({
+        id: crypto.randomUUID(),
+        questionId,
+        ...opt,
+      }))
+    );
+  }
+
+  return c.json(createSuccessResponse({ id: questionId }), 201);
+});
+
+/**
+ * PUT /papers/questions/:questionId
+ * Update an existing question (Admin only).
+ */
+paperRoutes.put('/questions/:questionId', jwtAuth, adminAuth, async (c) => {
+  const questionId = c.req.param('questionId');
+  const body = await c.req.json();
+  const parsed = createQuestionSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return c.json(
+      createErrorResponse(ErrorCode.VALIDATION_ERROR, 'Validation failed', parsed.error.flatten()),
+      400,
+    );
+  }
+
+  const db = c.get('db');
+
+  // Update question
+  await db.update(questions).set({
+    questionText: parsed.data.questionText,
+    explanationText: parsed.data.explanationText,
+    points: parsed.data.points,
+    complexity: parsed.data.complexity,
+    orderIndex: parsed.data.orderIndex,
+  }).where(eq(questions.id, questionId));
+
+  // Update options: delete all and re-insert (simplest for CRUD)
+  await db.delete(questionOptions).where(eq(questionOptions.questionId, questionId));
+  
+  if (parsed.data.options.length > 0) {
+    await db.insert(questionOptions).values(
+      parsed.data.options.map((opt) => ({
+        id: crypto.randomUUID(),
+        questionId,
+        optionText: opt.optionText,
+        isCorrect: opt.isCorrect,
+        orderIndex: opt.orderIndex,
+      }))
+    );
+  }
+
+  return c.json(createSuccessResponse({ message: 'Question updated' }));
+});
+
+/**
+ * DELETE /questions/:id
+ * Delete a question (Admin only).
+ */
+paperRoutes.delete('/questions/:questionId', jwtAuth, adminAuth, async (c) => {
+  const questionId = c.req.param('questionId');
+  const db = c.get('db');
+
+  await db.delete(questions).where(eq(questions.id, questionId));
+  return c.json(createSuccessResponse({ message: 'Question deleted' }));
 });

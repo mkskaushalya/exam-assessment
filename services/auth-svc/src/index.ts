@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 
 import type { Env, Variables } from './types';
 import { authRoutes } from './routes/auth';
+import { userRoutes } from './routes/users';
 import { dbMiddleware } from './middleware/db';
 
 const app = new Hono<{ Bindings: Env; Variables: Variables }>();
@@ -19,5 +20,6 @@ app.get('/health', (c) => c.json({ status: 'ok', service: 'auth-svc' }));
 
 // Routes
 app.route('/auth', authRoutes);
+app.route('/users', userRoutes);
 
 export default app;

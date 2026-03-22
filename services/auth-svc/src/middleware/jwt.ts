@@ -41,6 +41,19 @@ export const jwtAuth = createMiddleware<{ Bindings: Env; Variables: Variables }>
 );
 
 /**
+ * Admin authorization middleware.
+ */
+export const adminAuth = createMiddleware<{ Bindings: Env; Variables: Variables }>(
+  async (c, next) => {
+    const role = c.get('userRole');
+    if (role !== 'admin') {
+      return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Admin access required' } }, 403);
+    }
+    await next();
+  },
+);
+
+/**
  * Sign a JWT using Web Crypto API (compatible with Cloudflare Workers).
  */
 export async function signJwt(

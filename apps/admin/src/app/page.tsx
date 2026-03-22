@@ -136,27 +136,6 @@ export default function AdminPage() {
             </Link>
           ))}
         </div>
-
-        {/* Info Banner */}
-        <div
-          style={{
-            background: 'rgba(99, 102, 241, 0.15)',
-            border: '1px solid rgba(99, 102, 241, 0.3)',
-            borderRadius: '12px',
-            padding: '1.25rem 1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-          }}
-        >
-          <span style={{ fontSize: '1.25rem' }}>ℹ️</span>
-          <div>
-            <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>PayloadCMS Integration Pending</div>
-            <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', marginTop: '0.15rem' }}>
-              Full CRUD operations and content management will be available once PayloadCMS is configured.
-            </div>
-          </div>
-        </div>
       </div>
     </main>
   );
