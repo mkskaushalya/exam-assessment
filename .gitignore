@@ -10,3 +10,6 @@ dist
 .dev.vars
 coverage
 .vercel
+
+.vercel
+.env*.local
