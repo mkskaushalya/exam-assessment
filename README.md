@@ -277,7 +277,3 @@ All workspace packages use the `@assessment/*` naming convention:
 - `@assessment/utils` — Shared utilities
 - `@assessment/eslint-config` — ESLint config
 - `@assessment/tsconfig` — TypeScript configs
-
-## License
-
-This project is part of a software engineering assessment.
