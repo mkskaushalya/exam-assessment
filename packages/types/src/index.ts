@@ -41,6 +41,7 @@ export interface Paper {
   examBoard: string;
   type: PaperType;
   year: number;
+  durationMinutes: number;
   priceLkr: number;
   createdAt: Date;
 }

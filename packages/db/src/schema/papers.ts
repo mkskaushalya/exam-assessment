@@ -20,6 +20,7 @@ export const papers = pgTable(
     examBoard: text('exam_board').notNull(),
     type: paperTypeEnum('type').notNull(),
     year: integer('year').notNull(),
+    durationMinutes: integer('duration_minutes').notNull().default(60),
     priceLkr: numeric('price_lkr', { precision: 10, scale: 2 }).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },

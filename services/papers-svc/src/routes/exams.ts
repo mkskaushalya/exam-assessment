@@ -1,11 +1,12 @@
 import { Hono } from 'hono';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, sql, inArray } from 'drizzle-orm';
 import {
   examSessions,
   sessionAnswers,
   questions,
   questionOptions,
   purchases,
+  papers,
 } from '@assessment/db';
 import {
   createSuccessResponse,
@@ -60,6 +61,18 @@ examRoutes.post('/sessions', async (c) => {
     return c.json(createErrorResponse(ErrorCode.PAPER_NOT_PURCHASED, 'Paper not purchased'), 403);
   }
 
+  // Fetch paper details for duration
+  const paperResult = await db
+    .select({ durationMinutes: papers.durationMinutes })
+    .from(papers)
+    .where(eq(papers.id, paperId))
+    .limit(1);
+  
+  const paper = paperResult[0];
+  if (!paper) {
+    return c.json(createErrorResponse(ErrorCode.NOT_FOUND, 'Paper not found'), 404);
+  }
+
   // Check for existing in-progress session
   const existingSession = await db
     .select()
@@ -89,7 +102,8 @@ examRoutes.post('/sessions', async (c) => {
   // Create new session
   const sessionId = generateId();
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + EXAM_DURATION_MINUTES * 60 * 1000);
+  const durationMinutes = paper.durationMinutes || EXAM_DURATION_MINUTES;
+  const expiresAt = new Date(now.getTime() + durationMinutes * 60 * 1000);
 
   await db.insert(examSessions).values({
     id: sessionId,
@@ -104,7 +118,7 @@ examRoutes.post('/sessions', async (c) => {
   await c.env.KV.put(
     `exam_timer:${sessionId}`,
     JSON.stringify({ startedAt: now.toISOString(), expiresAt: expiresAt.toISOString() }),
-    { expirationTtl: EXAM_DURATION_MINUTES * 60 + 300 }, // extra 5 min buffer
+    { expirationTtl: durationMinutes * 60 + 300 }, // extra 5 min buffer
   );
 
   // Get questions for this paper
@@ -272,12 +286,16 @@ examRoutes.post('/sessions/:id/submit', async (c) => {
     .from(questions)
     .where(eq(questions.paperId, session.paperId));
 
-  // Get all options to check correctness
   const allQuestionIds = paperQuestions.map((q) => q.id);
-  const allOptions = await db.select().from(questionOptions);
+  // Get all options for these questions to check correctness
+  const allOptions = await db
+    .select()
+    .from(questionOptions)
+    .where(inArray(questionOptions.questionId, allQuestionIds));
+  
   const correctOptionMap = new Map<string, string>();
   for (const opt of allOptions) {
-    if (opt.isCorrect === 1 && allQuestionIds.includes(opt.questionId)) {
+    if (opt.isCorrect === 1) {
       correctOptionMap.set(opt.questionId, opt.id);
     }
   }
@@ -331,3 +349,64 @@ examRoutes.post('/sessions/:id/submit', async (c) => {
     }),
   );
 });
+
+/**
+ * GET /exam/sessions/:id/results
+ * Get results for a submitted exam session.
+ */
+examRoutes.get('/sessions/:id/results', async (c) => {
+  const sessionId = c.req.param('id');
+  const userId = c.get('userId');
+  const db = c.get('db');
+
+  const sessionResult = await db
+    .select()
+    .from(examSessions)
+    .where(and(eq(examSessions.id, sessionId), eq(examSessions.userId, userId)))
+    .limit(1);
+
+  const session = sessionResult[0];
+  if (!session) {
+    return c.json(createErrorResponse(ErrorCode.NOT_FOUND, 'Session not found'), 404);
+  }
+
+  if (session.status !== 'submitted') {
+    return c.json(createErrorResponse(ErrorCode.SESSION_NOT_SUBMITTED, 'Exam not submitted yet'), 400);
+  }
+
+  // Calculate stats from answers
+  const answers = await db
+    .select()
+    .from(sessionAnswers)
+    .where(eq(sessionAnswers.sessionId, sessionId));
+
+  const paperQuestions = await db
+    .select({ id: questions.id, points: questions.points })
+    .from(questions)
+    .where(eq(questions.paperId, session.paperId));
+
+  const totalQuestions = paperQuestions.length;
+  const correctAnswers = answers.filter(a => a.isCorrect === 1).length;
+  const totalPoints = paperQuestions.reduce((sum, q) => sum + q.points, 0);
+  const earnedPoints = answers.reduce((sum, a) => {
+    if (a.isCorrect === 1) {
+      const q = paperQuestions.find(pq => pq.id === a.questionId);
+      return sum + (q?.points || 0);
+    }
+    return sum;
+  }, 0);
+
+  return c.json(createSuccessResponse({
+    sessionId: session.id,
+    submittedAt: session.submittedAt,
+    score: {
+      totalQuestions,
+      correctAnswers,
+      scorePct: parseFloat(session.scorePct || '0'),
+      totalPoints,
+      earnedPoints,
+    }
+  }));
+});
+
+

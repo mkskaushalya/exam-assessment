@@ -189,6 +189,7 @@ const createPaperSchema = z.object({
   examBoard: z.string().min(1),
   type: z.enum(['past_paper', 'model_paper', 'ai_predicted']),
   year: z.number().int(),
+  durationMinutes: z.number().int().min(1).default(60),
   priceLkr: z.string().regex(/^\d+(\.\d{1,2})?$/),
 });
 
@@ -208,7 +209,15 @@ paperRoutes.post('/', jwtAuth, adminAuth, async (c) => {
 
   await db.insert(papers).values({
     id,
-    ...parsed.data,
+    title: parsed.data.title,
+    description: parsed.data.description,
+    subject: parsed.data.subject,
+    language: parsed.data.language,
+    examBoard: parsed.data.examBoard,
+    type: parsed.data.type,
+    year: parsed.data.year,
+    durationMinutes: parsed.data.durationMinutes,
+    priceLkr: parsed.data.priceLkr,
   });
 
   return c.json(createSuccessResponse({ id }), 201);

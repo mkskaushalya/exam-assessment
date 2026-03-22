@@ -39,6 +39,7 @@ interface PaperRecord {
   examBoard: string;
   type: 'past_paper' | 'model_paper' | 'ai_predicted';
   year: number;
+  durationMinutes: number;
   priceLkr: string;
   createdAt: string;
 }
@@ -155,6 +156,12 @@ export default function AdminPapersPage() {
       dataIndex: 'priceLkr', 
       key: 'priceLkr',
       render: (val) => `Rs. ${parseFloat(val).toLocaleString()}`
+    },
+    { 
+      title: 'Duration', 
+      dataIndex: 'durationMinutes', 
+      key: 'durationMinutes',
+      render: (min) => `${min} mins`
     },
     {
       title: 'Actions',
@@ -302,18 +309,28 @@ export default function AdminPapersPage() {
             </Form.Item>
           </div>
 
-          <Form.Item
-            name="priceLkr"
-            label="Price (LKR)"
-            rules={[{ required: true, message: 'Please enter price' }]}
-          >
-            <InputNumber 
-              min={0} 
-              style={{ width: '100%' }} 
-              formatter={(value) => `Rs. ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={(value) => value!.replace(/\Rs.\s?|(,*)/g, '')}
-            />
-          </Form.Item>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <Form.Item
+              name="priceLkr"
+              label="Price (LKR)"
+              rules={[{ required: true, message: 'Please enter price' }]}
+            >
+              <InputNumber 
+                min={0} 
+                style={{ width: '100%' }} 
+                formatter={(value) => `Rs. ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                 parser={(value) => value!.replace(/Rs.\s?|(,*)/g, '') as any}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="durationMinutes"
+              label="Duration (mins)"
+              rules={[{ required: true, message: 'Please enter duration' }]}
+            >
+              <InputNumber min={1} style={{ width: '100%' }} placeholder="60" />
+            </Form.Item>
+          </div>
 
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Space>

@@ -94,6 +94,7 @@ export default function PaperDetailPage({ params }: { params: Promise<{ id: stri
           <div className={styles.metadata}>
             <span><BookOutlined /> {paper.subject}</span>
             <span><ClockCircleOutlined /> {paper.year}</span>
+            <span><ClockCircleOutlined /> {paper.durationMinutes} Mins</span>
             <span><FileTextOutlined /> {totalQuestions} Questions</span>
           </div>
         </div>
