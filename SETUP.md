@@ -12,12 +12,23 @@ The project uses [Neon](https://neon.tech/) as its PostgreSQL provider, specific
 4. This becomes your **DATABASE_URL**.
 
 ### Initialize Schema:
-Run the following command locally to push the schema to your new database:
+The CI/CD pipeline is configured to automatically run migrations on every deployment. However, for the initial setup or local testing, you can push the schema manually:
 ```bash
 pnpm --filter @assessment/db run db:push
 ```
 
-## 2. Cloudflare Workers Setup (Services)
+## 2. Cloudflare Public API URL
+
+Once the `api-gateway` worker is deployed, it provides the public API endpoint.
+
+### How to get the URL:
+1. Go to your [Cloudflare Dashboard](https://dash.cloudflare.com/).
+2. Navigate to **Workers & Pages** > **api-gateway**.
+3. Under **Build & deployment** (or on the main overview for the worker), you will find the **URL** (e.g., `https://api-gateway.your-subdomain.workers.dev`).
+4. Append `/api` to this URL: `https://api-gateway.your-subdomain.workers.dev/api`.
+5. This becomes your **NEXT_PUBLIC_API_URL**.
+
+## 3. Cloudflare Workers Setup (Services)
 
 The backend services (`api-gateway`, `auth-svc`, `papers-svc`) are deployed as Cloudflare Workers using Wrangler.
 
@@ -36,7 +47,7 @@ The backend services (`api-gateway`, `auth-svc`, `papers-svc`) are deployed as C
    - User: Details (Read)
 5. Copy the generated token.
 
-## 3. Vercel Setup (Portal & Admin)
+## 4. Vercel Setup (Portal & Admin)
 
 The frontend portal is a Next.js application designed to be deployed on Vercel.
 
@@ -77,6 +88,7 @@ To enable the CI/CD pipeline, you must add the following secrets to your GitHub 
 | `CLOUDFLARE_API_TOKEN` | Your Cloudflare API Token |
 | `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare Account ID |
 | `DATABASE_URL` | Your Neon PostgreSQL connection string |
+| `NEXT_PUBLIC_API_URL` | URL of your `api-gateway` worker (ending in `/api`) |
 | `VERCEL_TOKEN` | Your Vercel API Token |
 | `VERCEL_ORG_ID` | Your Vercel Organization ID |
 | `VERCEL_PORTAL_PROJECT_ID` | Project ID for the portal app |

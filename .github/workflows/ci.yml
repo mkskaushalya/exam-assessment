@@ -141,6 +141,8 @@ jobs:
 
       - name: Build Portal
         run: pnpm turbo build --filter=@assessment/portal
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
       - name: Deploy Portal to Vercel
         uses: amondnet/vercel-action@v25
@@ -174,6 +176,8 @@ jobs:
 
       - name: Build Admin
         run: pnpm turbo build --filter=@assessment/admin
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
       - name: Deploy Admin to Vercel
         uses: amondnet/vercel-action@v25
