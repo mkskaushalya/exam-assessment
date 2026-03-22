@@ -1,8 +1,23 @@
-# Project Setup & Deployment Guide
-
 This guide provides detailed instructions on how to set up the infrastructure, obtain the necessary tokens, and configure GitHub Secrets for the manual and automated deployment of the Exam Assessment application.
 
-## 1. Cloudflare Workers Setup (Services)
+## 1. Database Setup (Neon PostgreSQL)
+
+The project uses [Neon](https://neon.tech/) as its PostgreSQL provider, specifically utilizing the serverless HTTP driver for Cloudflare Workers compatibility.
+
+### Create a Database:
+1. Sign up for a free account at [Neon.tech](https://neon.tech/).
+2. Create a new project (e.g., `exam-assessment`).
+3. In the **Connection Details** section on your dashboard, copy the **Connection string**.
+   - It should look like: `postgresql://[user]:[password]@[host]/neondb?sslmode=require`
+4. This becomes your **DATABASE_URL**.
+
+### Initialize Schema:
+Run the following command locally to push the schema to your new database:
+```bash
+pnpm --filter @assessment/db run db:push
+```
+
+## 2. Cloudflare Workers Setup (Services)
 
 The backend services (`api-gateway`, `auth-svc`, `papers-svc`) are deployed as Cloudflare Workers using Wrangler.
 
@@ -21,7 +36,7 @@ The backend services (`api-gateway`, `auth-svc`, `papers-svc`) are deployed as C
    - User: Details (Read)
 5. Copy the generated token.
 
-## 2. Vercel Setup (Portal)
+## 3. Vercel Setup (Portal & Admin)
 
 The frontend portal is a Next.js application designed to be deployed on Vercel.
 
@@ -41,7 +56,7 @@ The frontend portal is a Next.js application designed to be deployed on Vercel.
 4. The **Org ID** (`VERCEL_ORG_ID`) is usually the same for both.
 5. If using CLI, `vercel link` in each app directory will create a `.vercel/project.json` file where you can find these.
 
-## 3. Turborepo Remote Caching (Optional but Recommended)
+## 4. Turborepo Remote Caching (Optional but Recommended)
 
 Turborepo can use remote caching to speed up CI/CD builds.
 
@@ -49,7 +64,7 @@ Turborepo can use remote caching to speed up CI/CD builds.
 2. Your **TURBO_TEAM** is your Vercel team/user slug.
 3. Your **TURBO_TOKEN** is the Vercel Token you created in the previous step.
 
-## 4. GitHub Secrets Configuration
+## 5. GitHub Secrets Configuration
 
 To enable the CI/CD pipeline, you must add the following secrets to your GitHub repository:
 
@@ -61,6 +76,7 @@ To enable the CI/CD pipeline, you must add the following secrets to your GitHub 
 | :--- | :--- |
 | `CLOUDFLARE_API_TOKEN` | Your Cloudflare API Token |
 | `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare Account ID |
+| `DATABASE_URL` | Your Neon PostgreSQL connection string |
 | `VERCEL_TOKEN` | Your Vercel API Token |
 | `VERCEL_ORG_ID` | Your Vercel Organization ID |
 | `VERCEL_PORTAL_PROJECT_ID` | Project ID for the portal app |
@@ -71,7 +87,7 @@ To enable the CI/CD pipeline, you must add the following secrets to your GitHub 
 > [!NOTE]
 > `TURBO_TEAM` can be added as a **GitHub Variable** instead of a Secret if you prefer, as it's not sensitive.
 
-## 5. Local Development and Deployment
+## 6. Local Development and Deployment
 
 ### Install CLI tools:
 ```bash
@@ -79,5 +95,6 @@ pnpm install -g wrangler vercel
 ```
 
 ### Manual Deployment:
+- **Database**: `pnpm --filter @assessment/db run db:push` (Updates schema).
 - **Workers**: `pnpm run deploy` from the root (targets all services).
-- **Portal**: `cd apps/portal && vercel --prod`.
+- **Vercel Apps**: `cd apps/portal && vercel --prod` (and same for `apps/admin`).
