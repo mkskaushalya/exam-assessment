@@ -87,7 +87,7 @@ JWT_SECRET=your-secret-key-min-32-chars-long
 
 **`apps/portal/.env.local`**
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:8787/api
+NEXT_PUBLIC_API_URL=https://exam-api.tute.lk/api
 ```
 
 ### 4. Set Up the Database

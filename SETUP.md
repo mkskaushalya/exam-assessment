@@ -25,7 +25,7 @@ Once the `api-gateway` worker is deployed, it provides the public API endpoint.
 1. Go to your [Cloudflare Dashboard](https://dash.cloudflare.com/).
 2. Navigate to **Workers & Pages** > **api-gateway**.
 3. Under **Build & deployment** (or on the main overview for the worker), you will find the **URL** (e.g., `https://api-gateway.your-subdomain.workers.dev`).
-4. Append `/api` to this URL: `https://api-gateway.your-subdomain.workers.dev/api`.
+4. For production, the URL is: **`https://exam-api.tute.lk/api`**.
 5. This becomes your **NEXT_PUBLIC_API_URL**.
 
 ## 3. Cloudflare Workers Setup (Services)

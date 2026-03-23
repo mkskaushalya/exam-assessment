@@ -22,7 +22,7 @@ app.use(
   cors({
     origin: (origin, c) => {
       if (c.env.ENVIRONMENT === 'production') {
-        return ['https://portal.assessment.dev', 'https://admin.assessment.dev'].includes(origin) ? origin : null;
+        return ['https://exam-portal.tute.lk', 'https://exam-admin.tute.lk'].includes(origin) ? origin : null;
       }
       // In development, allow any origin
       return origin || 'http://localhost:3000';
