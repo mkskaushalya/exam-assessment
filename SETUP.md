@@ -103,7 +103,19 @@ To enable the CI/CD pipeline, you must add the following secrets to your GitHub 
 > [!NOTE]
 > `TURBO_TEAM` can be added as a **GitHub Variable** instead of a Secret if you prefer, as it's not sensitive.
 
-## 6. Local Development and Deployment
+## 6. Final Production Access
+
+Once your deployment is complete, your platform is available at:
+- **Student Exam Portal**: `https://exam-portal.tute.lk`
+- **Administrator Panel**: `https://exam-admin.tute.lk`
+- **API Gateway**: `https://exam-api.tute.lk/api`
+
+### Sample Credentials
+- **Email**: `admin@assessment.dev`
+- **Password**: `password123`
+- *Note: For student access, you can register a new account on the Student Portal.*
+
+## 7. Local Development and Deployment
 
 ### Install CLI tools:
 ```bash

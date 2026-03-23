@@ -1,6 +1,15 @@
-# Exam Practice Platform
-
 A modern, full-stack **Exam Practice Platform** built as a monorepo with industry-standard tooling. Students can browse practice papers, purchase access, take timed exams, and view performance analytics.
+
+## 🚀 Live Production Links
+- **Student Exam Portal**: [https://exam-portal.tute.lk](https://exam-portal.tute.lk)
+- **Administrator Panel**: [https://exam-admin.tute.lk](https://exam-admin.tute.lk)
+- **API Gateway**: [https://exam-api.tute.lk/api](https://exam-api.tute.lk/api)
+
+### Sample Credentials (Production)
+Use these to explore the platform after running the database seed:
+- **Admin Email**: `admin@assessment.dev`
+- **Password**: `password123`
+- *Note: For student access, you can register a new account on the Student Portal.*
 
 ## Tech Stack
 
