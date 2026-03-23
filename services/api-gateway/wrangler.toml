@@ -21,6 +21,9 @@ id = "2c764f04a4164aeb9f5026ffebd06fbc"
 
 [env.production]
 name = "api-gateway-production"
+routes = [
+  { pattern = "exam-api.tute.lk/*", custom_domain = true }
+]
 
 [env.production.vars]
 ENVIRONMENT = "production"
