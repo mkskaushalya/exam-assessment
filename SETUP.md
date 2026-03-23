@@ -45,6 +45,9 @@ The backend services (`api-gateway`, `auth-svc`, `papers-svc`) are deployed as C
    - Account: Workers Scripts (Edit)
    - Account: Worker KV Storage (Edit)
    - User: Details (Read)
+   - Zone: Workers Routes (Edit) (Required for Custom Domains)
+   - Zone: DNS (Edit) (Required for Custom Domains)
+   - Zone: Zone (Read) (Required for Custom Domains)
 5. Copy the generated token.
 
 ## 4. Vercel Setup (Portal & Admin)
