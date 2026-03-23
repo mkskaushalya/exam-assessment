@@ -1,13 +1,24 @@
 'use client';
 
-import { Input, Button, Card, Typography, App as AntApp } from 'antd';
-import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
-import { useForm, Controller } from 'react-hook-form';
+import {
+  UserOutlined,
+  MailOutlined,
+  LockOutlined
+} from '@ant-design/icons';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import {
+  Input,
+  Button,
+  Card,
+  Typography,
+  App as AntApp
+} from 'antd';
 import Link from 'next/link';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
 
 import { useAuth } from '@/hooks/useAuth';
+
 import styles from './register.module.scss';
 
 const { Title, Text } = Typography;

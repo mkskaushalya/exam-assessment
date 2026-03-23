@@ -1,13 +1,15 @@
 'use client';
 
-import { use } from 'react';
-import { Card, Typography, Statistic, Row, Col, Spin, Button } from 'antd';
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   TrophyOutlined,
 } from '@ant-design/icons';
+import type { ApiResponse } from '@assessment/types';
 import { useQuery } from '@tanstack/react-query';
+import { Card, Typography, Statistic, Row, Col, Spin, Button } from 'antd';
+import Link from 'next/link';
+import { use } from 'react';
 import {
   BarChart,
   Bar,
@@ -21,10 +23,9 @@ import {
   Cell,
   Legend,
 } from 'recharts';
-import Link from 'next/link';
 
-import type { ApiResponse } from '@assessment/types';
 import { api } from '@/lib/api';
+
 import styles from './results.module.scss';
 
 const { Title, Text } = Typography;

@@ -1,10 +1,12 @@
-import type { Metadata } from 'next';
+import '@ant-design/v5-patch-for-react-19';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { App as AntApp, ConfigProvider } from 'antd';
-import '@ant-design/v5-patch-for-react-19';
+import type { Metadata } from 'next';
+
+import { Header } from '@/components/Header';
 
 import { Providers } from './providers';
-import { Header } from '@/components/Header';
+
 import './globals.scss';
 
 export const metadata: Metadata = {

@@ -1,14 +1,15 @@
 'use client';
 
-import { use, useState, useEffect, useCallback, useRef } from 'react';
-import { Card, Radio, Button, Typography, Progress, App as AntApp, Tag } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-
 import type { ApiResponse } from '@assessment/types';
-import { api } from '@/lib/api';
 import { formatDuration } from '@assessment/utils';
+import { useQuery } from '@tanstack/react-query';
+import { Card, Radio, Button, Typography, Progress, App as AntApp, Tag } from 'antd';
+import { useRouter } from 'next/navigation';
+import { use, useState, useEffect, useCallback, useRef } from 'react';
+
+import { api } from '@/lib/api';
+
 import styles from './exam.module.scss';
 
 const { Title, Text } = Typography;
@@ -47,27 +48,6 @@ export default function ExamPage({ params }: { params: Promise<{ sessionId: stri
     staleTime: Infinity,
   });
 
-  // Timer countdown
-  useEffect(() => {
-    if (!data?.session) return;
-    const expiresAt = new Date(data.session.expiresAt).getTime();
-
-    const interval = setInterval(() => {
-      const remaining = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
-      setTimeLeft(remaining);
-
-      if (remaining <= 0) {
-        clearInterval(interval);
-        handleSubmit();
-      }
-    }, 1000);
-
-    setTimeLeft(Math.max(0, Math.floor((expiresAt - Date.now()) / 1000)));
-
-    return () => clearInterval(interval);
-  }, [data?.session]);
-
-  // Autosave on answer change
   const autosave = useCallback(
     async (questionId: string, optionId: string) => {
       try {
@@ -87,10 +67,10 @@ export default function ExamPage({ params }: { params: Promise<{ sessionId: stri
 
     // Debounced autosave
     if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
-    autosaveTimerRef.current = setTimeout(() => autosave(questionId, optionId), 500);
+    autosaveTimerRef.current = setTimeout(() => { void autosave(questionId, optionId); }, 500);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     setSubmitting(true);
     try {
       await api.post(`/exam/sessions/${sessionId}/submit`);
@@ -104,7 +84,27 @@ export default function ExamPage({ params }: { params: Promise<{ sessionId: stri
     } finally {
       setSubmitting(false);
     }
-  };
+  }, [sessionId, router, message]);
+
+  // Timer countdown
+  useEffect(() => {
+    if (!data?.session) return;
+    const expiresAt = new Date(data.session.expiresAt).getTime();
+
+    const interval = setInterval(() => {
+      const remaining = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+      setTimeLeft(remaining);
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        void handleSubmit();
+      }
+    }, 1000);
+
+    setTimeLeft(Math.max(0, Math.floor((expiresAt - Date.now()) / 1000)));
+
+    return () => clearInterval(interval);
+  }, [data?.session, handleSubmit]);
 
   const confirmSubmit = () => {
     const unanswered = (data?.questions?.length ?? 0) - Object.keys(answers).length;

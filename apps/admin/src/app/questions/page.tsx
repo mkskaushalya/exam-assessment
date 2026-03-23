@@ -1,7 +1,5 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-
 import {
   PlusOutlined,
   EditOutlined,
@@ -29,6 +27,7 @@ import {
 } from 'antd';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { api } from '@/lib/api';
 
@@ -75,13 +74,13 @@ export default function AdminQuestionsPage() {
     setLoading(true);
     try {
       // Fetch paper details first (using the public portal endpoint is fine for basic info)
-      const paperRes = await api.get(`/papers/${paperId}`);
+      const paperRes = await api.get<{ success: boolean; data: { paper: PaperInfo } }>(`/papers/${paperId}`);
       if (paperRes.data.success) {
         setPaper(paperRes.data.data.paper);
       }
 
       // Fetch all questions for admin
-      const questionsRes = await api.get(`/papers/${paperId}/questions/admin`);
+      const questionsRes = await api.get<{ success: boolean; data: QuestionRecord[] }>(`/papers/${paperId}/questions/admin`);
       if (questionsRes.data.success) {
         setQuestions(questionsRes.data.data);
       }
@@ -94,7 +93,7 @@ export default function AdminQuestionsPage() {
   }, [paperId]);
 
   useEffect(() => {
-    fetchPaperAndQuestions();
+    void fetchPaperAndQuestions();
   }, [fetchPaperAndQuestions]);
 
   const showModal = (question?: QuestionRecord) => {
@@ -147,8 +146,8 @@ export default function AdminQuestionsPage() {
         message.success('Question added successfully');
       }
       setIsModalVisible(false);
-      fetchPaperAndQuestions();
-    } catch (error) {
+      void fetchPaperAndQuestions();
+    } catch {
       message.error('Failed to save question');
     }
   };
@@ -157,8 +156,8 @@ export default function AdminQuestionsPage() {
     try {
       await api.delete(`/papers/questions/${id}`);
       message.success('Question removed');
-      fetchPaperAndQuestions();
-    } catch (error) {
+      void fetchPaperAndQuestions();
+    } catch {
       message.error('Failed to remove question');
     }
   };
@@ -206,8 +205,8 @@ export default function AdminQuestionsPage() {
             title={`Question ${item.orderIndex}`}
             extra={
               <Space>
-                <Button icon={<EditOutlined />} onClick={() => showModal(item)} size="small" />
-                <Popconfirm title="Delete question?" onConfirm={() => handleDelete(item.id)}>
+                <Button icon={<EditOutlined />} onClick={() => { showModal(item); }} size="small" />
+                <Popconfirm title="Delete question?" onConfirm={() => { void handleDelete(item.id); }}>
                   <Button icon={<DeleteOutlined />} danger size="small" />
                 </Popconfirm>
               </Space>

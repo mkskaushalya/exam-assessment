@@ -1,13 +1,14 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Layout, Button, Avatar, Dropdown } from 'antd';
 import type { MenuProps } from 'antd';
-import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import React from 'react';
 
 import { useAuth } from '@/hooks/useAuth';
+
 import styles from './Header.module.scss';
 
 const { Header: AntHeader } = Layout;
@@ -29,7 +30,7 @@ export function Header() {
       key: 'logout',
       icon: <LogoutOutlined />,
       label: 'Logout',
-      onClick: () => logout(),
+      onClick: () => { void logout(); },
     },
   ];
 

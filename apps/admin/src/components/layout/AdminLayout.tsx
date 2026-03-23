@@ -1,7 +1,5 @@
 'use client';
 
-import React, { useEffect } from 'react';
-
 import {
   DashboardOutlined,
   FileTextOutlined,
@@ -13,6 +11,7 @@ import { Layout, Menu, Avatar, Dropdown } from 'antd';
 import type { MenuProps } from 'antd';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
 
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 
@@ -63,7 +62,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       key: 'logout',
       icon: <LogoutOutlined />,
       label: 'Logout',
-      onClick: () => logout(),
+      onClick: () => { void logout(); },
     },
   ];
 

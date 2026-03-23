@@ -23,9 +23,9 @@ api.interceptors.request.use((config) => {
 // ─── Response Interceptor: Handle 401 and token refresh ──────────────────────
 
 let isRefreshing = false;
-let failedQueue: { resolve: (value: unknown) => void; reject: (error: unknown) => void }[] = [];
+let failedQueue: { resolve: (value: string | null) => void; reject: (error: any) => void }[] = [];
 
-function processQueue(error: unknown, token: string | null = null) {
+function processQueue(error: any, token: string | null = null) {
   failedQueue.forEach(({ resolve, reject }) => {
     if (error) {
       reject(error);
@@ -38,16 +38,16 @@ function processQueue(error: unknown, token: string | null = null) {
 
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: { config: any; response?: { status: number } }) => {
+    const originalRequest = error.config as { _retry?: boolean; headers: Record<string, string> };
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
-        return new Promise((resolve, reject) => {
+        return new Promise<string | null>((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         }).then((token) => {
-          originalRequest.headers.Authorization = `Bearer ${token as string}`;
-          return api(originalRequest);
+          originalRequest.headers.Authorization = `Bearer ${token ?? ''}`;
+          return api(originalRequest as any);
         });
       }
 
@@ -55,25 +55,25 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await api.post('/auth/refresh');
+        const response = await api.post<{ success: boolean; data: { accessToken: string } }>('/auth/refresh');
         const { accessToken } = response.data.data;
         useAdminAuthStore.getState().setAccessToken(accessToken);
         processQueue(null, accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return api(originalRequest);
+        return api(originalRequest as any);
       } catch (refreshError) {
         processQueue(refreshError, null);
         useAdminAuthStore.getState().logout();
         if (typeof window !== 'undefined') {
           window.location.href = '/login';
         }
-        return Promise.reject(refreshError);
+        return Promise.reject(refreshError instanceof Error ? refreshError : new Error(String(refreshError)));
       } finally {
         isRefreshing = false;
       }
     }
 
-    return Promise.reject(error);
+    return Promise.reject(error instanceof Error ? error : new Error('An unexpected error occurred'));
   },
 );

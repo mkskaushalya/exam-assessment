@@ -1,14 +1,15 @@
 'use client';
 
-import { use, useState } from 'react';
-import { Card, Tag, Typography, Button, List, Divider, Spin, App as AntApp } from 'antd';
 import { LockOutlined, BookOutlined, ClockCircleOutlined, FileTextOutlined } from '@ant-design/icons';
-import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-
 import type { ApiResponse, Paper, Question } from '@assessment/types';
+import { useQuery } from '@tanstack/react-query';
+import { Card, Tag, Typography, Button, List, Divider, Spin, App as AntApp } from 'antd';
+import { useRouter } from 'next/navigation';
+import { use, useState } from 'react';
+
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/store/auth';
+
 import styles from './detail.module.scss';
 
 const { Title, Text, Paragraph } = Typography;
@@ -36,7 +37,7 @@ export default function PaperDetailPage({ params }: { params: Promise<{ id: stri
     try {
       await api.post(`/papers/${id}/purchase`);
       message.success('Paper purchased successfully!');
-      refetch();
+      void refetch();
     } catch (err: unknown) {
       const errorMsg =
         (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error
@@ -61,7 +62,7 @@ export default function PaperDetailPage({ params }: { params: Promise<{ id: stri
       return;
     }
     try {
-      const res = await api.post('/exam/sessions', { paperId: id });
+      const res = await api.post<{ success: boolean; data: { session: { id: string } } }>('/exam/sessions', { paperId: id });
       const sessionId = res.data.data.session.id;
       router.push(`/exam/${sessionId}`);
     } catch (err: unknown) {

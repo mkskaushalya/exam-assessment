@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useCallback } from 'react';
 
-import { useAuthStore } from '@/store/auth';
 import { api } from '@/lib/api';
+import { useAuthStore } from '@/store/auth';
 
 /**
  * Custom hook for authentication management.
@@ -18,11 +18,20 @@ export function useAuth() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await api.post('/auth/refresh');
+        const response = await api.post<{ success: boolean; data: { accessToken: string } }>('/auth/refresh');
         const { accessToken } = response.data.data;
 
         // Decode user from token payload (base64)
-        const payload = JSON.parse(atob(accessToken.split('.')[1]));
+        interface TokenPayload {
+          sub: string;
+          name?: string;
+          email?: string;
+          role: 'student' | 'admin';
+        }
+        const tokenParts = accessToken.split('.');
+        const b64Payload = tokenParts[1];
+        if (!b64Payload) throw new Error('Invalid token');
+        const payload = JSON.parse(atob(b64Payload)) as TokenPayload;
         setAuth(
           {
             id: payload.sub,
@@ -38,12 +47,25 @@ export function useAuth() {
       }
     };
 
-    checkSession();
+    void checkSession();
   }, [setAuth, setLoading]);
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const response = await api.post('/auth/login', { email, password });
+      interface LoginResponse {
+        success: boolean;
+        data: {
+          accessToken: string;
+          user: {
+            id: string;
+            name: string;
+            email: string;
+            role: 'student' | 'admin';
+            createdAt: Date;
+          };
+        };
+      }
+      const response = await api.post<LoginResponse>('/auth/login', { email, password });
       const { accessToken, user: userData } = response.data.data;
       setAuth(userData, accessToken);
       router.push('/papers');

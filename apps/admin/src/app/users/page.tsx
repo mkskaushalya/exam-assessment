@@ -1,7 +1,5 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-
 import {
   DeleteOutlined,
   UserOutlined,
@@ -19,6 +17,8 @@ import {
   Input
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import React, { useState, useEffect, useCallback } from 'react';
+
 import { api } from '@/lib/api';
 import { useAdminAuthStore } from '@/store/auth';
 
@@ -41,7 +41,7 @@ export default function AdminUsersPage() {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await api.get('/users');
+      const response = await api.get<{ success: boolean; data: UserRecord[] }>('/users');
       if (response.data.success) {
         setUsers(response.data.data);
       }
@@ -54,14 +54,14 @@ export default function AdminUsersPage() {
   }, []);
 
   useEffect(() => {
-    fetchUsers();
+    void fetchUsers();
   }, [fetchUsers]);
 
   const handleDelete = async (id: string) => {
     try {
       await api.delete(`/users/${id}`);
       message.success('User deleted successfully');
-      fetchUsers();
+      void fetchUsers();
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: { message?: string } } } };
       message.error(error.response?.data?.error?.message || 'Failed to delete user');
@@ -110,7 +110,7 @@ export default function AdminUsersPage() {
         <Popconfirm
           title="Delete User"
           description={`Are you sure you want to delete ${record.name}? This action cannot be undone.`}
-          onConfirm={() => handleDelete(record.id)}
+          onConfirm={() => { void handleDelete(record.id); }}
           disabled={record.id === currentUser?.id}
           okText="Yes"
           cancelText="No"

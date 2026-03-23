@@ -1,7 +1,5 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-
 import {
   PlusOutlined,
   EditOutlined,
@@ -26,6 +24,7 @@ import {
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import Link from 'next/link';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { api } from '@/lib/api';
 
@@ -57,7 +56,7 @@ export default function AdminPapersPage() {
   const fetchPapers = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await api.get('/papers', {
+      const response = await api.get<{ success: boolean; data: PaperRecord[] }>('/papers', {
         params: { search: searchText }
       });
       if (response.data.success) {
@@ -72,7 +71,7 @@ export default function AdminPapersPage() {
   }, [searchText]);
 
   useEffect(() => {
-    fetchPapers();
+    void fetchPapers();
   }, [fetchPapers]);
 
   const showModal = (paper?: PaperRecord) => {
@@ -109,7 +108,7 @@ export default function AdminPapersPage() {
         message.success('Paper created successfully');
       }
       setIsModalVisible(false);
-      fetchPapers();
+      void fetchPapers();
     } catch (error) {
       console.error('Failed to save paper:', error);
       message.error('Failed to save paper');
@@ -120,7 +119,7 @@ export default function AdminPapersPage() {
     try {
       await api.delete(`/papers/${id}`);
       message.success('Paper deleted successfully');
-      fetchPapers();
+      void fetchPapers();
     } catch (error) {
       console.error('Failed to delete paper:', error);
       message.error('Failed to delete paper');
@@ -176,12 +175,12 @@ export default function AdminPapersPage() {
           <Button 
             icon={<EditOutlined />} 
             size="small" 
-            onClick={() => showModal(record)}
+            onClick={() => { showModal(record); }}
           />
           <Popconfirm
             title="Delete Paper"
             description="Are you sure you want to delete this paper? All associated questions will also be deleted."
-            onConfirm={() => handleDelete(record.id)}
+            onConfirm={() => { void handleDelete(record.id); }}
             okText="Yes"
             cancelText="No"
           >
