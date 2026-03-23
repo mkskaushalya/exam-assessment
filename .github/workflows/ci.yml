@@ -113,7 +113,11 @@ jobs:
 
       - name: Deploy ${{ matrix.service }}
         working-directory: services/${{ matrix.service }}
-        run: pnpm wrangler deploy --env production
+        run: |
+          if [ "${{ matrix.service }}" != "api-gateway" ]; then
+            echo "${{ secrets.DATABASE_URL }}" | pnpm wrangler secret put DATABASE_URL --env production
+          fi
+          pnpm wrangler deploy --env production
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
