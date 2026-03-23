@@ -14,7 +14,7 @@ id = "d298e7708ad44a25b6dfb8eab8249b84"
 [env.production]
 name = "auth-svc-production"
 routes = [
-  { pattern = "exam-auth-svc.tute.lk/*", custom_domain = true }
+  { pattern = "exam-auth-svc.tute.lk", custom_domain = true }
 ]
 
 [[env.production.kv_namespaces]]
