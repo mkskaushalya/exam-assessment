@@ -28,7 +28,7 @@ routes = [
 [env.production.vars]
 ENVIRONMENT = "production"
 AUTH_SVC_URL = "https://auth-svc-production.mkskaushalya.workers.dev"
-PAPERS_SVC_URL = "https://papers-svc-production.mkskaushalya.workers.dev"
+PAPERS_SVC_URL = "https://exam-paper-svc.tute.lk"
 
 [[env.production.kv_namespaces]]
 binding = "KV"

@@ -8,6 +8,9 @@ id = "0238c4109ca74e83949edd0508d2c942"
 
 [env.production]
 name = "papers-svc-production"
+routes = [
+  { pattern = "exam-paper-svc.tute.lk/*", custom_domain = true }
+]
 
 [[env.production.kv_namespaces]]
 binding = "KV"
