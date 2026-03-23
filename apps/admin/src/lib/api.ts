@@ -17,6 +17,12 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // Ensure /api prefix is present when using absolute paths with axios baseURL
+  if (config.url?.startsWith('/') && !config.url.startsWith('/api')) {
+    config.url = `/api${config.url}`;
+  }
+
   return config;
 });
 
