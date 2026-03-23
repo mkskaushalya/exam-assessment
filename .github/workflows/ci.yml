@@ -116,6 +116,7 @@ jobs:
         run: |
           if [ "${{ matrix.service }}" != "api-gateway" ]; then
             echo "${{ secrets.DATABASE_URL }}" | pnpm wrangler secret put DATABASE_URL --env production
+            echo "${{ secrets.JWT_SECRET }}" | pnpm wrangler secret put JWT_SECRET --env production
           fi
           pnpm wrangler deploy --env production
         env:

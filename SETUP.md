@@ -91,6 +91,7 @@ To enable the CI/CD pipeline, you must add the following secrets to your GitHub 
 | `CLOUDFLARE_API_TOKEN` | Your Cloudflare API Token |
 | `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare Account ID |
 | `DATABASE_URL` | Your Neon PostgreSQL connection string |
+| `JWT_SECRET` | A strong random string for signing JWTs (min 32 chars) |
 | `NEXT_PUBLIC_API_URL` | URL of your `api-gateway` worker (ending in `/api`) |
 | `VERCEL_TOKEN` | Your Vercel API Token |
 | `VERCEL_ORG_ID` | Your Vercel Organization ID |
