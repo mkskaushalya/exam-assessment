@@ -115,17 +115,26 @@ jobs:
         working-directory: services/${{ matrix.service }}
         run: |
           if [ "${{ matrix.service }}" != "api-gateway" ]; then
-            if [ -n "${{ secrets.DATABASE_URL }}" ]; then
-              echo "${{ secrets.DATABASE_URL }}" | pnpm wrangler secret put DATABASE_URL --env production
+            if [ -n "$DATABASE_URL" ]; then
+              echo "Setting DATABASE_URL secret..."
+              echo "$DATABASE_URL" | pnpm wrangler secret put DATABASE_URL --env production
+            else
+              echo "DATABASE_URL secret is empty, skipping..."
             fi
-            if [ -n "${{ secrets.JWT_SECRET }}" ]; then
-              echo "${{ secrets.JWT_SECRET }}" | pnpm wrangler secret put JWT_SECRET --env production
+            
+            if [ -n "$JWT_SECRET" ]; then
+              echo "Setting JWT_SECRET secret..."
+              echo "$JWT_SECRET" | pnpm wrangler secret put JWT_SECRET --env production
+            else
+              echo "JWT_SECRET secret is empty, skipping..."
             fi
           fi
           pnpm wrangler deploy --env production
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
   deploy-portal:
     name: Deploy Portal
