@@ -1,19 +1,52 @@
 :root {
-  --color-primary: #4F46E5;
-  --color-primary-hover: #4338CA;
+  // Brand Colors
+  --brand-primary: #4F46E5;
+  --brand-primary-hover: #4338CA;
+  --brand-secondary: #0ea5e9;
+  
+  // Semantic Colors
   --color-success: #10B981;
   --color-warning: #F59E0B;
   --color-error: #EF4444;
-  --color-bg: #F9FAFB;
-  --color-surface: #FFFFFF;
-  --color-text: #111827;
-  --color-text-secondary: #6B7280;
-  --color-border: #E5E7EB;
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --border-radius: 8px;
+  --color-info: #3b82f6;
+
+  // Backgrounds & Surfaces
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f5f9;
+  
+  // Text Colors
+  --color-text: #0f172a;
+  --color-text-secondary: #64748b;
+  --color-text-tertiary: #94a3b8;
+  --color-text-on-primary: #ffffff;
+  
+  // Borders
+  --color-border: #e2e8f0;
+  --color-border-heavy: #cbd5e1;
+
+  // Header Specific (Premium Dark)
+  --header-bg: #0f172a;
+  --header-text: #f8fafc;
+  --header-text-secondary: #94a3b8;
+  --header-text-hover: #38bdf8;
+  --header-border: rgba(255, 255, 255, 0.1);
+
+  // Layout
+  --max-width: 1280px;
+  --header-height: 72px;
+
+  // Effects
+  --font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 16px;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {

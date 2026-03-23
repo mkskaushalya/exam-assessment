@@ -1,52 +1,82 @@
 .container {
-  max-width: 1000px;
+  max-width: var(--max-width);
   margin: 0 auto;
-  padding: 2rem;
+  padding: 4rem 2rem;
 }
 
 .loading {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 6rem 0;
+  padding: 8rem 0;
+  gap: 1.5rem;
+  color: var(--color-text-secondary);
 }
 
 .header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 4rem;
 }
 
 .trophy {
-  font-size: 4rem;
-  margin-bottom: 1rem;
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
   display: block;
+  filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
 
   &.passed {
-    color: #10b981;
+    color: var(--color-success);
   }
 
   &.failed {
-    color: #ef4444;
+    color: var(--color-error);
   }
 }
 
 .statCard {
-  border-radius: 12px;
+  border-radius: var(--border-radius-lg);
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  transition: var(--transition-base);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  :global(.ant-statistic-title) {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+  }
+
+  :global(.ant-statistic-content) {
+    font-weight: 800;
+    color: var(--color-text);
+  }
 }
 
 .charts {
-  margin-top: 2rem;
+  margin-top: 3rem;
 }
 
 .chartCard {
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  overflow: hidden;
 }
 
 .actions {
   display: flex;
   justify-content: center;
-  margin-top: 2.5rem;
-  gap: 1rem;
+  margin-top: 5rem;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
