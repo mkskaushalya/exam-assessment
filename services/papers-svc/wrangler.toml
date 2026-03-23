@@ -5,3 +5,10 @@ compatibility_date = "2025-03-15"
 [[kv_namespaces]]
 binding = "KV"
 id = "0238c4109ca74e83949edd0508d2c942"
+
+[env.production]
+name = "papers-svc-production"
+
+[[env.production.kv_namespaces]]
+binding = "KV"
+id = "0238c4109ca74e83949edd0508d2c942"
