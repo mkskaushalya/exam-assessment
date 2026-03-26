@@ -68,7 +68,14 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await api.post<{ success: boolean; data: { accessToken: string } }>('/auth/refresh');
+        // Use a direct axios call instead of the 'api' instance to bypass the interceptor 
+        // and avoid infinite loop if refresh returns 401.
+        const response = await axios.post<{ success: boolean; data: { accessToken: string } }>(
+          `${API_BASE_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+        
         const { accessToken } = response.data.data;
         useAuthStore.getState().setAccessToken(accessToken);
         processQueue(null, accessToken);

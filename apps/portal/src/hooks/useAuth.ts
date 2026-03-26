@@ -16,6 +16,12 @@ export function useAuth() {
 
   // Check session on mount by attempting token refresh
   useEffect(() => {
+    // If we're already authenticated, no need to check
+    if (isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+
     const checkSession = async () => {
       try {
         const response = await api.post<{ success: boolean; data: { accessToken: string } }>('/auth/refresh');
@@ -29,9 +35,12 @@ export function useAuth() {
           role: 'student' | 'admin';
         }
         const tokenParts = accessToken.split('.');
+        if (tokenParts.length < 2) throw new Error('Invalid token format');
+        
         const b64Payload = tokenParts[1];
-        if (!b64Payload) throw new Error('Invalid token');
+        if (!b64Payload) throw new Error('Invalid token payload');
         const payload = JSON.parse(atob(b64Payload)) as TokenPayload;
+        
         setAuth(
           {
             id: payload.sub,
@@ -43,12 +52,13 @@ export function useAuth() {
           accessToken,
         );
       } catch {
+        // If it's 401, it means no valid refresh token, so just stop loading
         setLoading(false);
       }
     };
 
     void checkSession();
-  }, [setAuth, setLoading]);
+  }, [setAuth, setLoading, isAuthenticated]);
 
   const login = useCallback(
     async (email: string, password: string) => {
