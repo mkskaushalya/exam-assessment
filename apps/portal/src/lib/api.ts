@@ -1,4 +1,5 @@
-import axios, { InternalAxiosRequestConfig } from 'axios';
+import axios from 'axios';
+import type { InternalAxiosRequestConfig } from 'axios';
 
 import { useAuthStore } from '@/store/auth';
 
@@ -56,7 +57,7 @@ api.interceptors.response.use(
 
     // Don't handle 401s for the refresh token endpoint itself to avoid infinite loops
     if (originalRequest.url?.includes('/auth/refresh')) {
-      return Promise.reject(error);
+      return Promise.reject(error instanceof Error ? error : new Error('Refresh failed'));
     }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
