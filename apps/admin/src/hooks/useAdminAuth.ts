@@ -47,7 +47,7 @@ export function useAdminAuth() {
 
         const b64Payload = tokenParts[1];
         if (!b64Payload) throw new Error('Invalid token payload');
-        const payload = JSON.parse(atob(b64Payload)) as TokenPayload;
+        const payload = JSON.parse(atob(b64Payload.replace(/-/g, '+').replace(/_/g, '/'))) as TokenPayload;
         
         // Verify admin role
         if (payload.role !== 'admin') {
