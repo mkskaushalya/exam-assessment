@@ -129,12 +129,12 @@ export default function AdminQuestionsPage() {
     setIsModalVisible(true);
   };
 
-  const onFinish = async (values: Record<string, any>) => {
+  const onFinish = async (values: Record<string, string | number | boolean | unknown[]>) => {
     if (!paperId) return;
     try {
       const payload = {
         ...values,
-        options: values.options.map((opt: { isCorrect: boolean; optionText: string }, index: number) => ({
+        options: (values.options as { isCorrect: boolean; optionText: string }[]).map((opt, index) => ({
           ...opt,
           isCorrect: opt.isCorrect ? 1 : 0,
           orderIndex: index + 1

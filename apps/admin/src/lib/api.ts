@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { InternalAxiosRequestConfig } from 'axios';
 
 import { useAdminAuthStore } from '@/store/auth';
 
@@ -36,9 +37,9 @@ api.interceptors.request.use((config) => {
 // ─── Response Interceptor: Handle 401 and token refresh ──────────────────────
 
 let isRefreshing = false;
-let failedQueue: { resolve: (value: string | null) => void; reject: (error: any) => void }[] = [];
+let failedQueue: { resolve: (value: string | null) => void; reject: (error: unknown) => void }[] = [];
 
-function processQueue(error: any, token: string | null = null) {
+function processQueue(error: unknown, token: string | null = null) {
   failedQueue.forEach(({ resolve, reject }) => {
     if (error) {
       reject(error);
@@ -51,12 +52,12 @@ function processQueue(error: any, token: string | null = null) {
 
 api.interceptors.response.use(
   (response) => response,
-  async (error: { config: any; response?: { status: number } }) => {
-    const originalRequest = error.config as { _retry?: boolean; headers: Record<string, string>; url?: string };
+  async (error: { config: InternalAxiosRequestConfig & { _retry?: boolean }; response?: { status: number } }) => {
+    const originalRequest = error.config;
 
     // Don't handle 401s for the refresh token endpoint itself to avoid infinite loops
     if (originalRequest.url?.includes('/auth/refresh')) {
-      return Promise.reject(error);
+      return Promise.reject(error instanceof Error ? error : new Error('Refresh failed'));
     }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -65,7 +66,7 @@ api.interceptors.response.use(
           failedQueue.push({ resolve, reject });
         }).then((token) => {
           originalRequest.headers.Authorization = `Bearer ${token ?? ''}`;
-          return api(originalRequest as any);
+          return api(originalRequest);
         });
       }
 
@@ -86,7 +87,7 @@ api.interceptors.response.use(
         processQueue(null, accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return api(originalRequest as any);
+        return api(originalRequest);
       } catch (refreshError: unknown) {
         processQueue(refreshError, null);
         useAdminAuthStore.getState().logout();

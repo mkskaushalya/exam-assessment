@@ -102,7 +102,7 @@ export default function AdminUsersPage() {
       title: 'Joined', 
       dataIndex: 'createdAt', 
       key: 'createdAt',
-      render: (date) => new Date(date).toLocaleDateString()
+      render: (date: string) => new Date(date).toLocaleDateString()
     },
     {
       title: 'Actions',

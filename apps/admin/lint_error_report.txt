@@ -1,0 +1,29 @@
+
+> @assessment/admin@0.0.0 lint F:\sahan\dev\exam-assessment\apps\admin
+> next lint
+
+`next lint` is deprecated and will be removed in Next.js 16.
+For new projects, use create-next-app to choose your preferred linter.
+For existing projects, migrate to the ESLint CLI:
+npx @next/codemod@canary next-lint-to-eslint-cli .
+
+
+./src/app/papers/page.tsx
+26:1  Error: `next/link` import should occur before import of `react`  import/order
+27:1  Error: `antd/es/table` type import should occur before import of `react`  import/order
+161:42  Warning: Unsafe argument of type `any` assigned to a parameter of type `string`.  @typescript-eslint/no-unsafe-argument
+
+./src/app/questions/page.tsx
+28:1  Error: `react` import should occur after import of `next/navigation`  import/order
+132:78  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/users/page.tsx
+20:1  Error: `antd/es/table` type import should occur before import of `react`  import/order
+105:34  Warning: Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`.  @typescript-eslint/no-unsafe-argument
+
+./src/lib/api.ts
+1:1  Error: Imports "InternalAxiosRequestConfig" are only used as type.  @typescript-eslint/consistent-type-imports
+59:14  Error: Expected the Promise rejection reason to be an Error.  @typescript-eslint/prefer-promise-reject-errors
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.

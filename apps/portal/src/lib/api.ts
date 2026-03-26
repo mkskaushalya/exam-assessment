@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { InternalAxiosRequestConfig } from 'axios';
 
 import { useAuthStore } from '@/store/auth';
 
@@ -51,8 +51,8 @@ function processQueue(error: unknown, token: string | null = null) {
 
 api.interceptors.response.use(
   (response) => response,
-  async (error: { config: any; response?: { status: number } }) => {
-    const originalRequest = error.config as { _retry?: boolean; headers: Record<string, string>; url?: string };
+  async (error: { config: InternalAxiosRequestConfig & { _retry?: boolean }; response?: { status: number } }) => {
+    const originalRequest = error.config;
 
     // Don't handle 401s for the refresh token endpoint itself to avoid infinite loops
     if (originalRequest.url?.includes('/auth/refresh')) {
@@ -65,7 +65,7 @@ api.interceptors.response.use(
           failedQueue.push({ resolve, reject });
         }).then((token) => {
           originalRequest.headers.Authorization = `Bearer ${token ?? ''}`;
-          return api(originalRequest as any);
+          return api(originalRequest);
         });
       }
 
@@ -86,7 +86,7 @@ api.interceptors.response.use(
         processQueue(null, accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return api(originalRequest as any);
+        return api(originalRequest);
       } catch (refreshError: unknown) {
         processQueue(refreshError, null);
         useAuthStore.getState().logout();
