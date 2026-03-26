@@ -1,5 +1,6 @@
 'use client';
 
+import { decodeJwtPayload } from '@assessment/utils';
 import { useRouter } from 'next/navigation';
 import { useEffect, useCallback } from 'react';
 
@@ -42,12 +43,7 @@ export function useAuth() {
           email?: string;
           role: 'student' | 'admin';
         }
-        const tokenParts = accessToken.split('.');
-        if (tokenParts.length < 2) throw new Error('Invalid token format');
-        
-        const b64Payload = tokenParts[1];
-        if (!b64Payload) throw new Error('Invalid token payload');
-        const payload = JSON.parse(atob(b64Payload)) as TokenPayload;
+        const payload = decodeJwtPayload<TokenPayload>(accessToken);
         
         setAuth(
           {
