@@ -24,6 +24,7 @@ import {
   Legend,
 } from 'recharts';
 
+import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 
 import styles from './results.module.scss';
@@ -48,6 +49,7 @@ const COLORS = ['#10B981', '#EF4444'];
 
 export default function ResultsPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = use(params);
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   const { data, isLoading } = useQuery({
     queryKey: ['results', sessionId],
@@ -55,9 +57,10 @@ export default function ResultsPage({ params }: { params: Promise<{ sessionId: s
       const res = await api.get<ApiResponse<ResultData>>(`/exam/sessions/${sessionId}/results`);
       return res.data.data!;
     },
+    enabled: !!sessionId && !authLoading && isAuthenticated,
   });
 
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return (
       <div className={styles.loading}>
         <Spin size="large" />

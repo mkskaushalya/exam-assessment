@@ -11,10 +11,25 @@ import { useAdminAuthStore } from '@/store/auth';
  */
 export function useAdminAuth() {
   const router = useRouter();
-  const { user, isAuthenticated, isLoading, setAuth, setLoading, logout: storeLogout } = useAdminAuthStore();
+  const { user, isAuthenticated, isLoading, sessionChecked, setAuth, setLoading, setSessionChecked, logout: storeLogout } = useAdminAuthStore();
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
 
   // Check session on mount by attempting token refresh
   useEffect(() => {
+    // If we're already authenticated OR we've already checked the session, stop.
+    if (isAuthenticated || sessionChecked) {
+      setLoading(false);
+      return;
+    }
+
+    // Don't auto-check session on the login page to avoid redundant calls 
+    // when we know we probably don't have a session.
+    if (pathname === '/login') {
+      setLoading(false);
+      setSessionChecked(true);
+      return;
+    }
+
     const checkSession = async () => {
       try {
         const response = await api.post<{ success: boolean; data: { accessToken: string } }>('/auth/refresh');
@@ -28,8 +43,10 @@ export function useAdminAuth() {
           role: string;
         }
         const tokenParts = accessToken.split('.');
+        if (tokenParts.length < 2) throw new Error('Invalid token format');
+
         const b64Payload = tokenParts[1];
-        if (!b64Payload) throw new Error('Invalid token');
+        if (!b64Payload) throw new Error('Invalid token payload');
         const payload = JSON.parse(atob(b64Payload)) as TokenPayload;
         
         // Verify admin role
@@ -48,12 +65,15 @@ export function useAdminAuth() {
           accessToken,
         );
       } catch {
+        // If it's 401, it means no valid refresh token, so just stop loading
         setLoading(false);
+      } finally {
+        setSessionChecked(true);
       }
     };
 
     void checkSession();
-  }, [setAuth, setLoading]);
+  }, [setAuth, setLoading, setSessionChecked, isAuthenticated, sessionChecked, pathname]);
 
   const login = useCallback(
     async (email: string, password: string) => {

@@ -29,6 +29,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React, { useState, useEffect, useCallback } from 'react';
 
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { api } from '@/lib/api';
 
 const { Title, Text, Paragraph } = Typography;
@@ -69,8 +70,10 @@ export default function AdminQuestionsPage() {
   const [editingQuestion, setEditingQuestion] = useState<QuestionRecord | null>(null);
   const [form] = Form.useForm();
 
+  const { isAuthenticated, isLoading: authLoading } = useAdminAuth();
+
   const fetchPaperAndQuestions = useCallback(async () => {
-    if (!paperId) return;
+    if (!paperId || authLoading || !isAuthenticated) return;
     setLoading(true);
     try {
       // Fetch paper details first (using the public portal endpoint is fine for basic info)
@@ -90,7 +93,7 @@ export default function AdminQuestionsPage() {
     } finally {
       setLoading(false);
     }
-  }, [paperId]);
+  }, [paperId, isAuthenticated, authLoading]);
 
   useEffect(() => {
     void fetchPaperAndQuestions();

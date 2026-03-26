@@ -7,7 +7,7 @@ import {
   UserOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Avatar, Dropdown } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, Spin } from 'antd';
 import type { MenuProps } from 'antd';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -74,8 +74,16 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   // Prevent full layout rendering if not authenticated, hook will redirect to /login
   if (isLoading || (!isAuthenticated && pathname !== '/login')) {
     return (
-      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0f0c29' }}>
-        <span style={{ color: 'white' }}>Redirecting to login...</span>
+      <div style={{ 
+        height: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column',
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        background: '#0f0c29',
+        gap: '1rem'
+      }}>
+        <Spin size="large" />
       </div>
     );
   }

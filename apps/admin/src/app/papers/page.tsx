@@ -26,6 +26,7 @@ import type { ColumnsType } from 'antd/es/table';
 import Link from 'next/link';
 import React, { useState, useEffect, useCallback } from 'react';
 
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { api } from '@/lib/api';
 
 const { Title, Text } = Typography;
@@ -44,7 +45,6 @@ interface PaperRecord {
   priceLkr: string;
   createdAt: string;
 }
-
 export default function AdminPapersPage() {
   const [papers, setPapers] = useState<PaperRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -52,8 +52,10 @@ export default function AdminPapersPage() {
   const [editingPaper, setEditingPaper] = useState<PaperRecord | null>(null);
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState('');
+  const { isAuthenticated, isLoading: authLoading } = useAdminAuth();
 
   const fetchPapers = useCallback(async () => {
+    if (authLoading || !isAuthenticated) return;
     setLoading(true);
     try {
       const response = await api.get<{ success: boolean; data: PaperRecord[] }>('/papers', {
@@ -68,7 +70,7 @@ export default function AdminPapersPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchText]);
+  }, [searchText, isAuthenticated, authLoading]);
 
   useEffect(() => {
     void fetchPapers();

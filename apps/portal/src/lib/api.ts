@@ -90,9 +90,6 @@ api.interceptors.response.use(
       } catch (refreshError: unknown) {
         processQueue(refreshError, null);
         useAuthStore.getState().logout();
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
-        }
         return Promise.reject(refreshError instanceof Error ? refreshError : new Error('Token refresh failed'));
       } finally {
         isRefreshing = false;

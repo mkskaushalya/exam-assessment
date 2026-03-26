@@ -52,7 +52,12 @@ function processQueue(error: any, token: string | null = null) {
 api.interceptors.response.use(
   (response) => response,
   async (error: { config: any; response?: { status: number } }) => {
-    const originalRequest = error.config as { _retry?: boolean; headers: Record<string, string> };
+    const originalRequest = error.config as { _retry?: boolean; headers: Record<string, string>; url?: string };
+
+    // Don't handle 401s for the refresh token endpoint itself to avoid infinite loops
+    if (originalRequest.url?.includes('/auth/refresh')) {
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -68,20 +73,24 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await api.post<{ success: boolean; data: { accessToken: string } }>('/auth/refresh');
+        // Use a direct axios call instead of the 'api' instance to bypass the interceptor 
+        // and avoid infinite loop if refresh returns 401.
+        const response = await axios.post<{ success: boolean; data: { accessToken: string } }>(
+          `${API_BASE_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+        
         const { accessToken } = response.data.data;
         useAdminAuthStore.getState().setAccessToken(accessToken);
         processQueue(null, accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest as any);
-      } catch (refreshError) {
+      } catch (refreshError: unknown) {
         processQueue(refreshError, null);
         useAdminAuthStore.getState().logout();
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
-        }
-        return Promise.reject(refreshError instanceof Error ? refreshError : new Error(String(refreshError)));
+        return Promise.reject(refreshError instanceof Error ? refreshError : new Error('Token refresh failed'));
       } finally {
         isRefreshing = false;
       }
