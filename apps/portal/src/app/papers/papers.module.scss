@@ -1,75 +1,106 @@
 .container {
-  max-width: 1280px;
+  max-width: var(--max-width);
   margin: 0 auto;
-  padding: 2rem;
+  padding: 3rem 2rem;
 }
 
 .header {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .filters {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 1.25rem;
+  margin-bottom: 3rem;
   flex-wrap: wrap;
+  background: var(--color-surface);
+  padding: 1.5rem;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
 }
 
 .searchInput {
   flex: 1;
-  min-width: 250px;
+  min-width: 300px;
 }
 
 .loading {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 4rem 0;
+  padding: 6rem 0;
+  gap: 1rem;
 }
 
 .paperCard {
   height: 100%;
-  border-radius: 12px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-border);
+  transition: var(--transition-base);
   overflow: hidden;
+  background: var(--color-surface);
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--brand-secondary);
+  }
+
+  :global(.ant-card-meta-title) {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-text);
   }
 }
 
 .cardTag {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .cardMeta {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 0.5rem;
-  color: #6b7280;
-  font-size: 0.85rem;
+  margin-top: 0.75rem;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
 }
 
 .cardFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 1rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid #f0f0f0;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
 }
 
 .price {
-  color: #4f46e5;
-  font-size: 1.1rem;
+  color: var(--brand-primary);
+  font-size: 1.25rem;
+  font-weight: 800;
 }
 
 .board {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+  color: var(--color-text-tertiary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .pagination {
   display: flex;
   justify-content: center;
-  margin-top: 2.5rem;
+  margin-top: 4rem;
+  padding: 2rem 0;
 }

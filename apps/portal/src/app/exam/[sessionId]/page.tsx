@@ -8,6 +8,7 @@ import { Card, Radio, Button, Typography, Progress, App as AntApp, Tag } from 'a
 import { useRouter } from 'next/navigation';
 import { use, useState, useEffect, useCallback, useRef } from 'react';
 
+import { useAuth } from '@/hooks/useAuth';
 import { api } from '@/lib/api';
 
 import styles from './exam.module.scss';
@@ -39,12 +40,15 @@ export default function ExamPage({ params }: { params: Promise<{ sessionId: stri
   const [submitting, setSubmitting] = useState(false);
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+
   const { data, isLoading } = useQuery({
     queryKey: ['exam-session', sessionId],
     queryFn: async () => {
       const res = await api.get<ApiResponse<ExamSessionData>>(`/exam/sessions/${sessionId}`);
       return res.data.data;
     },
+    enabled: !authLoading && isAuthenticated,
     staleTime: Infinity,
   });
 

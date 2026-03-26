@@ -18,9 +18,16 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  // Ensure /api prefix is present when using absolute paths with axios baseURL
-  if (config.url?.startsWith('/') && !config.url.startsWith('/api')) {
-    config.url = `/api${config.url}`;
+  // Ensure /api prefix is handled correctly across local and production environments
+  if (config.url?.startsWith('/')) {
+    const hasApiInBase = config.baseURL?.endsWith('/api') || config.baseURL?.endsWith('/api/');
+    if (hasApiInBase) {
+      // If baseURL has /api, strip leading slash from url to append correctly
+      config.url = config.url.substring(1);
+    } else if (!config.url.startsWith('/api')) {
+      // If baseURL lacks /api and url lacks /api, prepend it
+      config.url = `/api${config.url}`;
+    }
   }
 
   return config;
@@ -61,7 +68,14 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await api.post<{ success: boolean; data: { accessToken: string } }>('/auth/refresh');
+        // Use a direct axios call instead of the 'api' instance to bypass the interceptor 
+        // and avoid infinite loop if refresh returns 401.
+        const response = await axios.post<{ success: boolean; data: { accessToken: string } }>(
+          `${API_BASE_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+        
         const { accessToken } = response.data.data;
         useAuthStore.getState().setAccessToken(accessToken);
         processQueue(null, accessToken);

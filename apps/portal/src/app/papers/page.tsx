@@ -59,6 +59,7 @@ function PapersContent() {
       const res = await api.get<ApiResponse<Paper[]>>(`/papers?${params.toString()}`);
       return res.data;
     },
+    enabled: !authLoading && isAuthenticated,
   });
 
   const updateFilters = (updates: Record<string, string | undefined>) => {
