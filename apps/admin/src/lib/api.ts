@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { InternalAxiosRequestConfig } from 'axios';
 
 import { useAdminAuthStore } from '@/store/auth';
 
@@ -36,9 +37,9 @@ api.interceptors.request.use((config) => {
 // ─── Response Interceptor: Handle 401 and token refresh ──────────────────────
 
 let isRefreshing = false;
-let failedQueue: { resolve: (value: string | null) => void; reject: (error: any) => void }[] = [];
+let failedQueue: { resolve: (value: string | null) => void; reject: (error: unknown) => void }[] = [];
 
-function processQueue(error: any, token: string | null = null) {
+function processQueue(error: unknown, token: string | null = null) {
   failedQueue.forEach(({ resolve, reject }) => {
     if (error) {
       reject(error);
@@ -51,8 +52,15 @@ function processQueue(error: any, token: string | null = null) {
 
 api.interceptors.response.use(
   (response) => response,
-  async (error: { config: any; response?: { status: number } }) => {
-    const originalRequest = error.config as { _retry?: boolean; headers: Record<string, string> };
+  async (error: { config: InternalAxiosRequestConfig & { _retry?: boolean }; response?: { status: number } }) => {
+    const originalRequest = error.config;
+
+    // Don't handle 401s for the refresh token endpoint itself to avoid infinite loops
+    const requestUrl = originalRequest.url ?? '';
+    const normalizedUrl = requestUrl.startsWith('/') ? requestUrl.slice(1) : requestUrl;
+    if (normalizedUrl.endsWith('auth/refresh')) {
+      return Promise.reject(error instanceof Error ? error : new Error('Refresh failed'));
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -60,7 +68,7 @@ api.interceptors.response.use(
           failedQueue.push({ resolve, reject });
         }).then((token) => {
           originalRequest.headers.Authorization = `Bearer ${token ?? ''}`;
-          return api(originalRequest as any);
+          return api(originalRequest);
         });
       }
 
@@ -68,20 +76,24 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await api.post<{ success: boolean; data: { accessToken: string } }>('/auth/refresh');
+        // Use a direct axios call instead of the 'api' instance to bypass the interceptor 
+        // and avoid infinite loop if refresh returns 401.
+        const response = await axios.post<{ success: boolean; data: { accessToken: string } }>(
+          `${API_BASE_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+        
         const { accessToken } = response.data.data;
         useAdminAuthStore.getState().setAccessToken(accessToken);
         processQueue(null, accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return api(originalRequest as any);
-      } catch (refreshError) {
+        return api(originalRequest);
+      } catch (refreshError: unknown) {
         processQueue(refreshError, null);
         useAdminAuthStore.getState().logout();
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
-        }
-        return Promise.reject(refreshError instanceof Error ? refreshError : new Error(String(refreshError)));
+        return Promise.reject(refreshError instanceof Error ? refreshError : new Error('Token refresh failed'));
       } finally {
         isRefreshing = false;
       }

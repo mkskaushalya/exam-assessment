@@ -26,6 +26,7 @@ import type { ColumnsType } from 'antd/es/table';
 import Link from 'next/link';
 import React, { useState, useEffect, useCallback } from 'react';
 
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { api } from '@/lib/api';
 
 const { Title, Text } = Typography;
@@ -44,7 +45,6 @@ interface PaperRecord {
   priceLkr: string;
   createdAt: string;
 }
-
 export default function AdminPapersPage() {
   const [papers, setPapers] = useState<PaperRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -52,8 +52,10 @@ export default function AdminPapersPage() {
   const [editingPaper, setEditingPaper] = useState<PaperRecord | null>(null);
   const [form] = Form.useForm();
   const [searchText, setSearchText] = useState('');
+  const { isAuthenticated, isLoading: authLoading } = useAdminAuth();
 
   const fetchPapers = useCallback(async () => {
+    if (authLoading || !isAuthenticated) return;
     setLoading(true);
     try {
       const response = await api.get<{ success: boolean; data: PaperRecord[] }>('/papers', {
@@ -68,7 +70,7 @@ export default function AdminPapersPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchText]);
+  }, [searchText, isAuthenticated, authLoading]);
 
   useEffect(() => {
     void fetchPapers();
@@ -93,11 +95,11 @@ export default function AdminPapersPage() {
     form.resetFields();
   };
 
-  const onFinish = async (values: Record<string, any>) => {
+  const onFinish = async (values: Record<string, string | number>) => {
     try {
       const payload = {
         ...values,
-        priceLkr: values.priceLkr.toString()
+        priceLkr: (values.priceLkr ?? 0).toString()
       };
 
       if (editingPaper) {
@@ -156,7 +158,7 @@ export default function AdminPapersPage() {
       title: 'Price (LKR)', 
       dataIndex: 'priceLkr', 
       key: 'priceLkr',
-      render: (val) => `Rs. ${parseFloat(val).toLocaleString()}`
+      render: (val: string) => `Rs. ${parseFloat(val).toLocaleString()}`
     },
     { 
       title: 'Duration', 
@@ -320,7 +322,7 @@ export default function AdminPapersPage() {
                 min={0} 
                 style={{ width: '100%' }} 
                 formatter={(value) => `Rs. ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                 parser={(value) => value!.replace(/Rs.\s?|(,*)/g, '') as any}
+                parser={(value) => (value?.replace(/Rs.\s?|(,*)/g, '') || '0') as unknown as 0}
               />
             </Form.Item>
 

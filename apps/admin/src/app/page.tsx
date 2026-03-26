@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+
 const stats = [
   { label: 'Total Papers', value: '—', icon: '📄' },
   { label: 'Total Questions', value: '—', icon: '❓' },
@@ -17,6 +19,18 @@ const quickActions = [
 ];
 
 export default function AdminPage() {
+  const { isAuthenticated, isLoading: authLoading } = useAdminAuth();
+
+  if (authLoading) {
+    return (
+      <div style={{ padding: '3rem', textAlign: 'center', color: '#fff' }}>
+        Loading dashboard...
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) return null;
+
   return (
     <main
       style={{

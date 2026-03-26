@@ -29,6 +29,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React, { useState, useEffect, useCallback } from 'react';
 
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { api } from '@/lib/api';
 
 const { Title, Text, Paragraph } = Typography;
@@ -69,8 +70,10 @@ export default function AdminQuestionsPage() {
   const [editingQuestion, setEditingQuestion] = useState<QuestionRecord | null>(null);
   const [form] = Form.useForm();
 
+  const { isAuthenticated, isLoading: authLoading } = useAdminAuth();
+
   const fetchPaperAndQuestions = useCallback(async () => {
-    if (!paperId) return;
+    if (!paperId || authLoading || !isAuthenticated) return;
     setLoading(true);
     try {
       // Fetch paper details first (using the public portal endpoint is fine for basic info)
@@ -90,7 +93,7 @@ export default function AdminQuestionsPage() {
     } finally {
       setLoading(false);
     }
-  }, [paperId]);
+  }, [paperId, isAuthenticated, authLoading]);
 
   useEffect(() => {
     void fetchPaperAndQuestions();
@@ -126,12 +129,12 @@ export default function AdminQuestionsPage() {
     setIsModalVisible(true);
   };
 
-  const onFinish = async (values: Record<string, any>) => {
+  const onFinish = async (values: Record<string, string | number | boolean | unknown[]>) => {
     if (!paperId) return;
     try {
       const payload = {
         ...values,
-        options: values.options.map((opt: { isCorrect: boolean; optionText: string }, index: number) => ({
+        options: (values.options as { isCorrect: boolean; optionText: string }[]).map((opt, index) => ({
           ...opt,
           isCorrect: opt.isCorrect ? 1 : 0,
           orderIndex: index + 1

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { InternalAxiosRequestConfig } from 'axios';
 
 import { useAuthStore } from '@/store/auth';
 
@@ -51,8 +52,14 @@ function processQueue(error: unknown, token: string | null = null) {
 
 api.interceptors.response.use(
   (response) => response,
-  async (error: { config: any; response?: { status: number } }) => {
-    const originalRequest = error.config as { _retry?: boolean; headers: Record<string, string> };
+  async (error: { config: InternalAxiosRequestConfig & { _retry?: boolean }; response?: { status: number } }) => {
+    const originalRequest = error.config;
+
+    // Don't handle 401s for the refresh token endpoint itself to avoid infinite loops
+    const url = originalRequest.url ?? '';
+    if (url.endsWith('auth/refresh')) {
+      return Promise.reject(error instanceof Error ? error : new Error('Refresh failed'));
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -60,7 +67,7 @@ api.interceptors.response.use(
           failedQueue.push({ resolve, reject });
         }).then((token) => {
           originalRequest.headers.Authorization = `Bearer ${token ?? ''}`;
-          return api(originalRequest as any);
+          return api(originalRequest);
         });
       }
 
@@ -81,13 +88,10 @@ api.interceptors.response.use(
         processQueue(null, accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return api(originalRequest as any);
+        return api(originalRequest);
       } catch (refreshError: unknown) {
         processQueue(refreshError, null);
         useAuthStore.getState().logout();
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
-        }
         return Promise.reject(refreshError instanceof Error ? refreshError : new Error('Token refresh failed'));
       } finally {
         isRefreshing = false;

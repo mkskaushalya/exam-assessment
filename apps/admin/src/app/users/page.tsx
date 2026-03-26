@@ -19,8 +19,8 @@ import {
 import type { ColumnsType } from 'antd/es/table';
 import React, { useState, useEffect, useCallback } from 'react';
 
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { api } from '@/lib/api';
-import { useAdminAuthStore } from '@/store/auth';
 
 const { Title, Text } = Typography;
 
@@ -36,9 +36,10 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const currentUser = useAdminAuthStore(state => state.user);
+  const { user: currentUser, isAuthenticated, isLoading: authLoading } = useAdminAuth();
 
   const fetchUsers = useCallback(async () => {
+    if (authLoading || !isAuthenticated) return;
     setLoading(true);
     try {
       const response = await api.get<{ success: boolean; data: UserRecord[] }>('/users');
@@ -51,7 +52,7 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isAuthenticated, authLoading]);
 
   useEffect(() => {
     void fetchUsers();
@@ -101,7 +102,7 @@ export default function AdminUsersPage() {
       title: 'Joined', 
       dataIndex: 'createdAt', 
       key: 'createdAt',
-      render: (date) => new Date(date).toLocaleDateString()
+      render: (date: string) => new Date(date).toLocaleDateString()
     },
     {
       title: 'Actions',
