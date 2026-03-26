@@ -52,7 +52,12 @@ function processQueue(error: unknown, token: string | null = null) {
 api.interceptors.response.use(
   (response) => response,
   async (error: { config: any; response?: { status: number } }) => {
-    const originalRequest = error.config as { _retry?: boolean; headers: Record<string, string> };
+    const originalRequest = error.config as { _retry?: boolean; headers: Record<string, string>; url?: string };
+
+    // Don't handle 401s for the refresh token endpoint itself to avoid infinite loops
+    if (originalRequest.url?.includes('/auth/refresh')) {
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
