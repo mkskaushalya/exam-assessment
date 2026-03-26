@@ -56,7 +56,9 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // Don't handle 401s for the refresh token endpoint itself to avoid infinite loops
-    if (originalRequest.url?.includes('/auth/refresh')) {
+    const requestUrl = originalRequest.url ?? '';
+    const normalizedUrl = requestUrl.startsWith('/') ? requestUrl.slice(1) : requestUrl;
+    if (normalizedUrl.endsWith('auth/refresh')) {
       return Promise.reject(error instanceof Error ? error : new Error('Refresh failed'));
     }
 
